@@ -1,0 +1,5 @@
+gender,age,numberOfChildren,mobility,aging,health,technology,fashion,house,food,leisure,sharing,energy
+M,28.0,1.0,-1,-1,0,1,-1,1,-1,1,0,0
+F,27.0,0.0,1,0,1,1,0,-1,0,0,0,-1
+F,44.0,1.0,1,-1,0,0,-1,-1,1,0,0,1
+M,51.0,1.0,0,1,1,-1,0,0,-1,1,0,-1

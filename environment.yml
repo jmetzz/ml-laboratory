@@ -1,0 +1,28 @@
+name: ml-laboratory
+channels:
+  - defaults
+dependencies:
+  - python=3.6.8
+  - jupyter
+  - nb_conda
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - statsmodels
+  - nb_conda_kernels
+  - tensorflow
+  - keras
+  - plotly
+  - sip
+  - six
+  - pillow
+  - click
+  - sphinx
+  - coverage
+  - flake8
+  - pip:
+    - awscli
+    - python-dotenv>=0.5.1

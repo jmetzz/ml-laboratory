@@ -102,3 +102,18 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+
+.vscode/
+.idea
+
+# Mac OS specific storage files
+.DS_Store
+
+# vim
+*.swp
+*.swo
+
+
+
