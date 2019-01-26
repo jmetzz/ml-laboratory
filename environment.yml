@@ -3,8 +3,12 @@ channels:
   - defaults
 dependencies:
   - python=3.6.8
-  - jupyter
-  - nb_conda
+  - flake8
+  - coverage
+  - sip
+  - six
+  - click
+  - sphinx
   - numpy
   - scipy
   - pandas
@@ -12,17 +16,13 @@ dependencies:
   - matplotlib
   - seaborn
   - statsmodels
+  - plotly
+  - pillow
+  - jupyter
   - nb_conda_kernels
+  - nb_conda
   - tensorflow
   - keras
-  - plotly
-  - sip
-  - six
-  - pillow
-  - click
-  - sphinx
-  - coverage
-  - flake8
   - pip:
     - awscli
-    - python-dotenv>=0.5.1
+    - python-dotenv
