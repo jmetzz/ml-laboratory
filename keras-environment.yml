@@ -1,0 +1,13 @@
+name: keras
+channels:
+  - defaults
+dependencies:
+  - python=3.6.8
+  - numpy
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - pillow
+  - tensorflow
+  - keras
+  - jupyter
