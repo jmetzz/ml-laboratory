@@ -79,7 +79,7 @@ class MNISTLoader:
             np.ndarray, np.ndarray]]:
         """Loads the MNIST data as a tuple of training, validation, and test data.
 
-        :return: traning_data, validation_data, test_data
+        :return: training_data, validation_data, test_data
 
             The ``training_data`` is returned as a tuple with two entries.
             The first entry contains the actual training images.  This is a
