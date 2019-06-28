@@ -1,13 +1,5 @@
-import random
-from typing import List, Tuple, Sequence
-
-import numpy as np
-
-from neural_networks.base import losses
-
-
 class GradientDescent:
-    def run(epochs, loss=losses.mse, learning_rate=0.01):
+    def run(epochs, los, learning_rate=0.01):
         """Find the weights wk and biases bl which minimize the cost function.
 
 
@@ -18,12 +10,10 @@ class GradientDescent:
             \end{eqnarray}
 
         """
-
-    pass
+        raise NotImplementedError()
 
 
 class StochasticGradientDescent:
-    pass
 
     def evaluate(self, test_data):
-        pass
+        raise NotImplementedError()

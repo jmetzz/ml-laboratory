@@ -7,12 +7,12 @@ def accuracy(test_set, predictions):
 
 
 def precision(gold_truth, predictions):
-    # precision = tp / tp_fp
+    """precision = tp / tp_fp"""
     raise NotImplementedError
 
 
 def recall(gold_truth, predictions):
-    # recall = tp / tp_fn
+    """ recall = tp / tp_fn"""
     raise NotImplementedError
 
 

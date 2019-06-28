@@ -41,7 +41,6 @@ def H(data, iterator=range_bytes, convert=_identity, base=2):
     for x in iterator():
         p_x = float(data.count(convert(x))) / len(data)
         if p_x > 0:
-            # entropy += - p_x * log(p_x, _resolve_base(data))
             entropy += - p_x * log(p_x, base)
     return entropy
 
