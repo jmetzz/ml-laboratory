@@ -71,6 +71,8 @@ class MNISTLoader:
 
       For details of the data structures that are returned,
       see the doc strings for ``load_data`` and ``load_data_wrapper``.
+
+      The original data set is available at: http://yann.lecun.com/exdb/mnist/
     """
 
     @staticmethod
