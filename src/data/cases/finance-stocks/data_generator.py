@@ -7,18 +7,18 @@ NUMBER_OF_STOCKS = 3
 
 np.random.seed(444)
 # age, gender, number of children
-userDf = pd.DataFrame(index=range(0, NUM_OF_PEOPLE))
+user_Df = pd.DataFrame(index=range(0, NUM_OF_PEOPLE))
 
-numberOfChildren = np.random.normal(1, 1, 2*NUM_OF_PEOPLE)
-realisticNOfChildren = [round(child) for child in numberOfChildren if (child > -0.5)]
+number_of_children = np.random.normal(1, 1, 2 * NUM_OF_PEOPLE)
+realistic_n_of_children = [round(child) for child in number_of_children if (child > -0.5)]
 
-randomDoubleAges = np.random.normal(30, 10, 2*NUM_OF_PEOPLE)
-limitedIntAges = [round(age) for age in randomDoubleAges if (age >18) and (age < 65)]
+random_double_ages = np.random.normal(30, 10, 2 * NUM_OF_PEOPLE)
+limited_int_ages = [round(age) for age in random_double_ages if (age > 18) and (age < 65)]
 
 gender = ['M', 'F']
-userDf['gender'] = [gender[np.random.randint(0, 2)] for _ in range(len(userDf.index))]
-userDf['age'] = [limitedIntAges[i] for i in range(len(userDf.index))]
-userDf['numberOfChildren'] = [realisticNOfChildren[i] for i in range(len(userDf.index))]
+user_Df['gender'] = [gender[np.random.randint(0, 2)] for _ in range(len(user_Df.index))]
+user_Df['age'] = [limited_int_ages[i] for i in range(len(user_Df.index))]
+user_Df['numberOfChildren'] = [realistic_n_of_children[i] for i in range(len(user_Df.index))]
 
 '''
 Open the stocks CSV file and assign the labels and stocks lists
@@ -32,13 +32,12 @@ with open('stocks.csv') as csvfile:
         if index == 0:
             labels = row[2:-3]
         else:
-            specificTrends = []
-            for tr in range(2, len(row)-3):
+            specific_trends = []
+            for tr in range(2, len(row) - 3):
                 if row[tr] == 'yes':
-                    specificTrends.append(labels[tr-2])
+                    specific_trends.append(labels[tr - 2])
 
-            stocks.append({'name': row[0], 'tag': row[1], 'trends': specificTrends})
-
+            stocks.append({'name': row[0], 'tag': row[1], 'trends': specific_trends})
 
 trends = []
 for label in labels:
@@ -48,61 +47,59 @@ for label in labels:
             stocksArr.append(stock['tag'])
     trends.append({'name': label, 'stocks': stocksArr})
 
+
 # Assign top 3 of liked and disliked trends
-def findTrends(trends, numberOfStocks, youngPerson):
-    likedTrends = []
-    dislikedTrends = []
-    trendsCopy = trends.copy()
-    for _ in range(0, min(numberOfStocks, len(trendsCopy))):
-        likedTrends.append(trendsCopy.pop(np.random.randint(0, len(trendsCopy)))['name'])
+def find_trends(trends, number_of_stocks, young_person):
+    liked_trends = []
+    disliked_trends = []
+    trends_copy = trends.copy()
+    for _ in range(0, min(number_of_stocks, len(trends_copy))):
+        liked_trends.append(trends_copy.pop(np.random.randint(0, len(trends_copy)))['name'])
 
-    for _ in range(0, min(numberOfStocks, len(trendsCopy))):
-        dislikedTrends.append(trendsCopy.pop(np.random.randint(0, len(trendsCopy)))['name'])
+    for _ in range(0, min(number_of_stocks, len(trends_copy))):
+        disliked_trends.append(trends_copy.pop(np.random.randint(0, len(trends_copy)))['name'])
 
-    trendArr = []
+    trend_arr = []
     for trend in trends:
-        if trend['name'] in likedTrends:
-            trendArr.append(1)
-        elif trend['name'] in dislikedTrends:
-            trendArr.append(-1)
+        if trend['name'] in liked_trends:
+            trend_arr.append(1)
+        elif trend['name'] in disliked_trends:
+            trend_arr.append(-1)
         else:
-            trendArr.append(0)
+            trend_arr.append(0)
 
     # totally legit thing to hard-code here
-    if youngPerson:
-        if (np.random.randint(0, 10) > 3):
-            # mobility
-            trendArr[0] = 1
-            # technology
-            trendArr[3] = 1
+    if young_person and (np.random.randint(0, 10) > 3):
+        trend_arr[0] = 1
+        trend_arr[3] = 1
 
-    return trendArr
+    return trend_arr
+
 
 users = []
-for i in range(0, len(userDf.index)):
-    trendsArr = []
-    numberOfStocks = NUMBER_OF_STOCKS
-    isYoungUser = userDf['age'][i] < 30
-    users.append(findTrends(trends, numberOfStocks, isYoungUser))
+for i in range(0, len(user_Df.index)):
+    trends_arr = []
+    number_of_stocks = NUMBER_OF_STOCKS
+    is_young_user = user_Df['age'][i] < 30
+    users.append(find_trends(trends, number_of_stocks, is_young_user))
 
-usersTransposed = []
+users_transposed = []
 for index in range(0, len(labels)):
-    newLine = []
+    new_line = []
     for userId in range(0, len(users)):
-        newLine.append(users[userId][index])
-    usersTransposed.append(newLine)
+        new_line.append(users[userId][index])
+    users_transposed.append(new_line)
 
-
-trendColumns = {}
+trend_columns = {}
 for index in range(0, len(labels)):
-    trendColumns[labels[index]] = usersTransposed[index]
+    trend_columns[labels[index]] = users_transposed[index]
 
-trendDf = pd.DataFrame(data=trendColumns)
-completeDf = userDf.merge(trendDf, left_index=True, right_index=True)
+trend_Df = pd.DataFrame(data=trend_columns)
+complete_Df = user_Df.merge(trend_Df, left_index=True, right_index=True)
 # print(completeDf)
 
-#write to CSV
-completeDf.to_csv('./output.csv', sep=',', index=False)
+# write to CSV
+complete_Df.to_csv('./output.csv', sep=',', index=False)
 
 '''
 Assigning stocks to users based on preferences
@@ -115,77 +112,63 @@ portfolio = pd.DataFrame(index=range(0, NUM_OF_PEOPLE))
 for stock in stocks:
     portfolio[stock['tag']] = [0 for _ in range(0, len(portfolio.index))]
 
-# print(portfolio)
 
-def isZero(x):
-    return x == 0
-
-def makeStockList(userId):
+def make_stock_list(user_id):
     rest = 100
-    amountOfStocks = np.random.randint(1, 10)
-    listOfPercentages = []
+    amount_of_stocks = np.random.randint(1, 10)
+    list_of_percentages = []
 
-    while rest > 0 and len(listOfPercentages) < amountOfStocks:
-        portfolioPercentage = np.random.randint(1, 1 + rest)
-        rest = rest - portfolioPercentage
-        minimum = min(portfolioPercentage, rest)
+    while rest > 0 and len(list_of_percentages) < amount_of_stocks:
+        portfolio_percentage = np.random.randint(1, 1 + rest)
+        rest = rest - portfolio_percentage
+        minimum = min(portfolio_percentage, rest)
         if minimum == 0:
             minimum = 5
-        listOfPercentages.append(minimum)
+        list_of_percentages.append(minimum)
 
-    if sum(listOfPercentages) < 100:
-        listOfPercentages.append(100 - sum(listOfPercentages))
+    if sum(list_of_percentages) < 100:
+        list_of_percentages.append(100 - sum(list_of_percentages))
 
-    listOfSortedPercentages = sorted(listOfPercentages, reverse=True)
-    # print()
-    # print(listOfSortedPercentages)
+    sorted_percentages = sorted(list_of_percentages, reverse=True)
 
     # traverse labels
     liked = []
     disliked = []
     neutral = []
     for label in labels:
-        if completeDf[label][userId] == 1:
+        if complete_Df[label][user_id] == 1:
             liked.append(label)
-        elif completeDf[label][userId] == -1:
+        elif complete_Df[label][user_id] == -1:
             disliked.append(label)
         else:
             neutral.append(label)
 
-    # print(liked)
+    trends_bought = []
+    for i in range(0, min(len(liked), round(len(sorted_percentages) / 2))):
+        trends_bought.append(liked[np.random.randint(0, len(liked))])
 
-    trendsBought = []
-    for i in range(0, min(len(liked), round(len(listOfSortedPercentages)/2))):
-        trendsBought.append(liked[np.random.randint(0, len(liked))])
-
-    difference = len(listOfSortedPercentages) - len(trendsBought)
+    difference = len(sorted_percentages) - len(trends_bought)
 
     for i in range(0, difference):
-        trendsBought.append(neutral[np.random.randint(0, len(neutral))])
+        trends_bought.append(neutral[np.random.randint(0, len(neutral))])
 
-
-    stocksBought = []
-    for i in range(0, len(trendsBought)):
+    stocks_bought = []
+    for i in range(0, len(trends_bought)):
         for trend in trends:
-            if (trend['name'] == trendsBought[i]):
-                matchingTrend = trend
+            if trend['name'] == trends_bought[i]:
+                matching_trend = trend
                 break
-        stocksBought.append(matchingTrend['stocks'][np.random.randint(0, len(matchingTrend['stocks']))])
+        stocks_bought.append(matching_trend['stocks'][np.random.randint(0, len(matching_trend['stocks']))])
 
-    # print(trendsBought)
-    # print(stocksBought)
+    stocks_bought_sorted = [0] * len(stocks)
+    for idx in range(0, len(stocks_bought)):
+        stocks_bought_sorted[tags.index(stocks_bought[idx])] = 1
 
-    stocksBoughtSorted = [0] * len(stocks)
-    print(tags)
-    for index in range(0, len(stocksBought)):
-        # stocksBoughtSorted[tags.index(stocksBought[index])] += listOfSortedPercentages[index]
-        stocksBoughtSorted[tags.index(stocksBought[index])] = 1
+    return stocks_bought_sorted
 
-    # print(stocksBoughtSorted)
-    return stocksBoughtSorted
 
-stocksDf = pd.DataFrame(columns=tags, index=range(0, NUM_OF_PEOPLE))
+stocks_Df = pd.DataFrame(columns=tags, index=range(0, NUM_OF_PEOPLE))
 for index in range(0, NUM_OF_PEOPLE):
-    stocksDf.loc[index] = makeStockList(index)
+    stocks_Df.loc[index] = make_stock_list(index)
 
-stocksDf.to_csv('./portfolios.csv', sep=',', index=False)
+stocks_Df.to_csv('./portfolios.csv', sep=',', index=False)
