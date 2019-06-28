@@ -1,0 +1,2 @@
+class RestrictedBoltzmannMachine:
+    pass
