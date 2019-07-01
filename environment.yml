@@ -24,6 +24,7 @@ dependencies:
   - nb_conda
   - tensorflow
   - keras
+  - ruamel.yaml
   - pip:
     - awscli
     - python-dotenv
