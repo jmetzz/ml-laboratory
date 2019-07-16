@@ -35,10 +35,14 @@ For that the training phase uses the algorithm known as gradient descent.
 """
 
 from neural_networks.base import networks
+from neural_networks.base.costs import CrossEntropyCost
+from neural_networks.base.initializers import sqrt_connections_ration
 from utils.data_helper import MNISTLoader
 
 if __name__ == '__main__':
     training_set, validation_set, test_set = MNISTLoader.load_data_wrapper(
         '../data/processed/MNIST/mnist.pkl.gz')
-    net = networks.Network([784, 20, 10])
-    net.sdg(training_set, epochs=20, eta=2.5, batch_size=20, test_data=test_set)
+
+    net = networks.ImprovedNetwork([784, 30, 10], cost=CrossEntropyCost, weight_initializer=sqrt_connections_ration)
+    net.sdg(training_set, epochs=10, eta=0.5, batch_size=10, lmbda=5.0, validation_data=validation_set,
+            measures=['valid_acc', 'valid_loss'])

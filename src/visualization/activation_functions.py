@@ -33,7 +33,7 @@ if __name__ == "__main__":
     print('----')
 
     y_value = tanh(input)
-    line_graph(input, y_value, "Inputs", "Hiperbolic Tangent Scores")
+    line_graph(input, y_value, "Inputs", "Hyperbolic Tangent Scores")
     pp.pprint(y_value)
     print('----')
 
