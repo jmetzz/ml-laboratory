@@ -17,3 +17,4 @@ class StochasticGradientDescent:
 
     def evaluate(self, test_data):
         raise NotImplementedError()
+
