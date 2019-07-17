@@ -6,6 +6,7 @@ import numpy as np
 from neural_networks.base.activations import sigmoid
 from neural_networks.base.costs import CrossEntropyCost
 from neural_networks.base.initializers import random_gaussian, sqrt_connections_ration
+from utils import data_helper
 
 
 class NetworkBase:
@@ -114,7 +115,6 @@ class SimpleNetwork(NetworkBase):
         :param epochs: number of epochs to run
         :param eta: learning rate
         :param batch_size: the size of the batch to use per iteration
-        :param loss: the cost function
         :param test_data: is provided then the network will be evaluated against
                the test data after each epoch, and partial progress printed out.
         :param debug: prints extra information
@@ -203,11 +203,12 @@ class SimpleNetwork(NetworkBase):
 
 class ImprovedNetwork(NetworkBase):
 
-    def __init__(self, layer_sizes, cost=CrossEntropyCost, weight_initializer=sqrt_connections_ration):
+    def __init__(self, layer_sizes, cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ration):
         self.num_layers = len(layer_sizes)
         self.layer_sizes = layer_sizes
+        self.num_classes = layer_sizes[-1]
         self.weights, self.biases = weight_initializer(layer_sizes)
-        self.cost = cost
+        self.cost_function = cost_function
 
     def sdg(self,
             training_data,
@@ -216,7 +217,7 @@ class ImprovedNetwork(NetworkBase):
             eta,
             lmbda=0.0,
             validation_data=None,
-            measures=None):
+            monitor=None):
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -238,8 +239,8 @@ class ImprovedNetwork(NetworkBase):
         """
         train_data = list(training_data)
         n = len(train_data)
-        eval_loss, eval_acc = [], []
-        train_loss, train_acc = [], []
+        validation_costs, validation_acc = [], []
+        train_costs, train_acc = [], []
         if validation_data:
             validation_data = list(validation_data)
 
@@ -249,17 +250,16 @@ class ImprovedNetwork(NetworkBase):
             for batch in batches:
                 self.update_batch(batch, eta, lmbda, n)
 
-            training_acc, training_loss, valid_acc, valid_loss = self.evaluate(lmbda, measures, train_data,
-                                                                               validation_data)
-            train_loss.append(training_loss)
-            train_acc.append(training_acc)
-            eval_loss.append(valid_loss)
-            eval_acc.append(valid_acc)
+            if monitor and validation_data is not None:
+                tr_acc, tr_cost, valid_acc, valid_cost = self._monitor(monitor, lmbda, train_data, validation_data)
+                train_costs.append(tr_cost)
+                train_acc.append(tr_acc)
+                validation_costs.append(valid_cost)
+                validation_acc.append(valid_acc)
 
-            ImprovedNetwork.print_results(epoch, valid_loss, valid_acc, training_loss, training_acc,
-                                          len(validation_data), n)
+                ImprovedNetwork.print_results(epoch, valid_cost, valid_acc, tr_cost, tr_acc)
 
-        return eval_loss, eval_acc, train_loss, train_acc
+        return validation_costs, validation_acc, train_costs, train_acc
 
     def update_batch(self,
                      mini_batch: List[Tuple[np.ndarray, np.ndarray]],
@@ -286,44 +286,38 @@ class ImprovedNetwork(NetworkBase):
 
         self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, b_hat)]
 
-    def evaluate(self, lmbda, measures, train_data, validation_data):
-        training_acc = training_loss = valid_acc = valid_loss = None
-        if 'train_acc' in measures:
-            training_acc = self.evaluate_acc(train_data, convert=True)
-        if 'train_loss' in measures:
-            training_loss = self.evaluate_loss(train_data, lmbda, convert=False)
-        if 'valid_acc' in measures:
-            valid_acc = self.evaluate_acc(validation_data, convert=False)
-        if 'valid_loss' in measures:
-            valid_loss = self.evaluate_loss(validation_data, lmbda, convert=True)
-        return training_acc, training_loss, valid_acc, valid_loss
+    def _monitor(self, monitor, lmbda, train_data, validation_data):
 
-    def evaluate_acc(self, data: Sequence, convert: False) -> float:
-        """Evaluate the network's prediction on the given test set
+        train_acc = train_cost = valid_acc = valid_cost = None
+        if 'train_acc' in monitor or 'train_cost' in monitor:
+            measures = []
+            if 'train_acc' in monitor: measures.append('acc')
+            if 'train_cost' in monitor: measures.append('cost')
+            transformed_data = [(x, np.argmax(y)) for x, y in train_data]
+            train_acc, train_cost = self.evaluate(transformed_data, measures, lmbda)
 
-        :param data:
-        :return: the number of test inputs correctly classified
-        """
-        if convert:
-            prediction = [(self.feed_forward(x), self.as_vector(y)) for x, y in data]
-        else:
-            prediction = [(self.feed_forward(x), y) for x, y in data]
-        return self.accuracy(prediction)
+        if 'valid_acc' in monitor or 'valid_cost' in monitor:
+            measures = []
+            if 'valid_acc' in monitor: measures.append('acc')
+            if 'valid_cost' in monitor: measures.append('cost')
+            valid_acc, valid_cost = self.evaluate(validation_data, measures, lmbda)
 
-    def evaluate_loss(self, data: Sequence, lmbda: float, convert: False) -> float:
-        """Evaluate the network's prediction on the given test set
+        return train_acc, train_cost, valid_acc, valid_cost
 
-        :param data:
-        :param lmbda:
-        :return: the number of test inputs correctly classified
-        """
-        if convert:
-            prediction = [(self.feed_forward(x), self.as_vector(y)) for x, y in data]
-        else:
-            prediction = [(self.feed_forward(x), y) for x, y in data]
-        return self.total_cost(prediction, lmbda)
+    def evaluate(self, test_data, measures=['acc'], lmbda=5.0):
+        data = list(test_data)
+        acc = cost = None
+        prediction = [self.feed_forward(x) for x, y in data]
+        if 'acc' in measures:
+            true_labels = [y for _, y in data]
+            acc = self._accuracy(zip(prediction, true_labels))
+        if 'cost' in measures:
+            true_labels_as_vector = [data_helper.as_vector(y, self.num_classes) for _, y in data]
+            cost = self._total_cost(list(zip(prediction, true_labels_as_vector)), lmbda)
 
-    def total_cost(self, data, lmbda):
+        return acc, cost
+
+    def _total_cost(self, data, lmbda):
         """Return the total cost for the data set ``data``.  The flag
         ``convert`` should be set to False if the data set is the
         training data (the usual case), and to True if the data set is
@@ -332,31 +326,20 @@ class ImprovedNetwork(NetworkBase):
         """
         cost = 0.0
         for activations, true_label in data:
-            cost += self.cost.evaluate(activations, true_label) / len(data)
+            cost += self.cost_function.evaluate(activations, true_label) / len(data)
         cost += 0.5 * (lmbda / len(data)) * sum(np.linalg.norm(w) ** 2 for w in self.weights)
         return cost
 
     @staticmethod
-    def accuracy(data):
+    def _accuracy(data) -> float:
         results = [(np.argmax(activations), true_label) for (activations, true_label) in data]
-        return sum(int(prediction == true_label) for (prediction, true_label) in results)
+        return sum(int(prediction == true_label) for (prediction, true_label) in results) / len(results)
 
     @staticmethod
-    def print_results(epoch, valid_loss, valid_acc, training_loss, training_acc, valid_size, training_size):
+    def print_results(epoch, valid_cost, valid_acc, training_cost, training_acc):
         print(f"Epoch {epoch}:")
-        if valid_acc: print(f"\t valid_acc: {valid_acc} / {valid_size}")
-        if valid_loss: print(f"\t valid_loss: {valid_loss:.5f}")
-        if training_acc: print(f"\t training_acc: {training_acc} / {training_size}")
-        if training_loss: print(f"\t training_loss: {training_loss:.5f}")
+        if valid_acc: print(f"\t valid_acc: {valid_acc:.5f}")
+        if valid_cost: print(f"\t valid_cost: {valid_cost:.5f}")
+        if training_acc: print(f"\t training_acc: {training_acc:.5f}")
+        if training_cost: print(f"\t training_cost: {training_cost:.5f}")
         print("-------")
-
-    @staticmethod
-    def as_vector(index):
-        """Return a 10-dimensional unit vector with a 1.0 in the j'th position
-        and zeroes elsewhere.  This is used to convert a digit (0...9)
-        into a corresponding desired output from the neural network.
-
-        """
-        e = np.zeros((10, 1))
-        e[index] = 1.0
-        return e

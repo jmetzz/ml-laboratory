@@ -43,6 +43,19 @@ if __name__ == '__main__':
     training_set, validation_set, test_set = MNISTLoader.load_data_wrapper(
         '../data/processed/MNIST/mnist.pkl.gz')
 
-    net = networks.ImprovedNetwork([784, 30, 10], cost=CrossEntropyCost, weight_initializer=sqrt_connections_ration)
-    net.sdg(training_set, epochs=10, eta=0.5, batch_size=10, lmbda=5.0, validation_data=validation_set,
-            measures=['valid_acc', 'valid_loss'])
+    net = networks.ImprovedNetwork([784, 20, 10],
+                                   cost_function=CrossEntropyCost,
+                                   weight_initializer=sqrt_connections_ration)
+    evaluation = net.sdg(training_set,
+                         epochs=10,
+                         eta=0.5,
+                         batch_size=100,
+                         lmbda=5.0,
+                         validation_data=validation_set,
+                         monitor=['train_acc']
+                         )
+
+    acc, cost = net.evaluate(test_set, ['acc', 'cost'])
+    print("Test performance:")
+    print(f"\tAcc: {acc}")
+    print(f"\tCost: {cost}")

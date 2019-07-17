@@ -133,7 +133,7 @@ class MNISTLoader:
         tr_d, va_d, te_d = cls.load_data(path)
 
         train_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
-        train_results = [cls.vectorized_result(y) for y in tr_d[1]]
+        train_results = [as_vector(y, 10) for y in tr_d[1]]
         train_data = zip(train_inputs, train_results)
 
         validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
@@ -144,12 +144,15 @@ class MNISTLoader:
 
         return train_data, validation_data, test_data
 
-    @staticmethod
-    def vectorized_result(j):
-        """Return a 10-dimensional unit vector with a 1.0 in the jth
-        position and zeroes elsewhere.  This is used to convert a digit
-        (0...9) into a corresponding desired output from the neural
-        network."""
-        e = np.zeros((10, 1))
-        e[j] = 1.0
-        return e
+
+def as_vector(idx, num_of_labels):
+    """Return a num_of_labels-dimensional unit vector with a 1.0 in the jth
+    position and zeroes elsewhere.
+
+    This is used to convert a digit (0...9) into a corresponding desired output
+    from the neural network.
+
+    """
+    e = np.zeros((num_of_labels, 1))
+    e[idx] = 1.0
+    return e
