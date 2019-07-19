@@ -2,9 +2,11 @@ import csv
 import gzip
 import pickle
 import random
+import os
 from typing import Tuple
 
 import numpy as np
+import h5py
 
 
 def load_train_test_datasets(filename, split=0.5):
@@ -41,6 +43,22 @@ def load_dataset(filename):
             for col in range(ncol - 1):
                 dataset[line][col] = float(dataset[line][col])
     return dataset
+
+
+def load_h5_dataset(path: str, name: str) -> Tuple:
+    train = h5py.File(os.path.join(path, f"train_{name}.h5"), "r")
+    x_orig = np.array(train["train_set_x"][:])  # your train set features
+    y_orig = np.array(train["train_set_y"][:])  # your train set labels
+    y_orig = y_orig.reshape((1, y_orig.shape[0]))
+
+    test = h5py.File(os.path.join(path, f"test_{name}.h5"), "r")
+    test_x_orig = np.array(test["test_set_x"][:])  # your test set features
+    test_y_orig = np.array(test["test_set_y"][:])  # your test set labels
+    test_y_orig = test_y_orig.reshape((1, test_y_orig.shape[0]))
+
+    classes = np.array(test["list_classes"][:])  # the list of classes
+
+    return x_orig, y_orig, test_x_orig, test_y_orig, classes
 
 
 toy_labeled_dataset = [[2.771244718, 1.784783929, 0],
@@ -156,3 +174,20 @@ def as_vector(idx, num_of_labels):
     e = np.zeros((num_of_labels, 1))
     e[idx] = 1.0
     return e
+
+
+def normalize(data: np.ndarray, axis=1, ord=2) -> np.ndarray:
+    """Normalize all elements in a vector or matrix
+
+    This operation is done by dividing each row vector of x by its norm, i.e.,
+        x / || x ||
+
+    After the operation each row of x should be a vector of unit length.
+
+    :param ord: Order of the norm (see numpy.linalg.norm documentation)
+    :param axis: specifies the axis of the input array along which
+        to compute the vector norms. 0 for columns, and 1 for lines.
+    :param data: a numpy array to normalize
+    :return: a normalized version of the input array
+    """
+    return data / np.linalg.norm(data, ord=ord, axis=axis, keepdims=True)

@@ -1,8 +1,6 @@
 import numpy as np
 from numpy import log, nan_to_num
 
-from neural_networks.base.activations import sigmoid
-
 
 class CrossEntropyCost:
     @staticmethod
@@ -44,6 +42,8 @@ class QuadraticCost:
         return (activation - true_label) * QuadraticCost.sigmoid_prime(z)
 
     @staticmethod
-    def sigmoid_prime(z):
-        """Derivative of the sigmoid function."""
-        return sigmoid(z) * (1 - sigmoid(z))
+    def derivative(output_activations, y):
+        """Return the vector of partial derivatives
+
+        \partial C_x / \partial a for the output activations."""
+        return output_activations - y
