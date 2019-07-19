@@ -1,17 +1,41 @@
+import json
 import random
 from typing import List, Tuple, Iterator, Any, Sequence
 
 import numpy as np
 
 from neural_networks.base.activations import sigmoid
-from neural_networks.base.costs import CrossEntropyCost
+from neural_networks.base.costs import CrossEntropyCost, QuadraticCost
 from neural_networks.base.initializers import random_gaussian, sqrt_connections_ration
 from utils import data_helper
 
 
 class NetworkBase:
 
+    def __init__(self, sizes: List[int]):
+        """
+        The biases and weights in the Network object are all
+        initialized randomly, using the Numpy np.random.randn function
+        to generate Gaussian distributions with mean 0 and standard deviation 1.
+
+        Assumes that the first layer of neurons is an input layer.
+
+        :param sizes: the number of neurons in the respective layers.
+
+        Example:
+            >>> net = SimpleNetwork([2, 3, 1])
+        """
+        self.num_layers = len(sizes)
+        self.layer_sizes = sizes
+        self.weights, self.biases = [], []
+
     def update_batch(self, *kwargs):
+        raise NotImplementedError("This method must be implemented in a specialization class")
+
+    def cost_name(self):
+        raise NotImplementedError("This method must be implemented in a specialization class")
+
+    def load(self, filename):
         raise NotImplementedError("This method must be implemented in a specialization class")
 
     def back_propagate(self, x: np.ndarray, y: float) \
@@ -49,7 +73,7 @@ class NetworkBase:
         # layer = 2 is the second-last layer, and so on.
         for layer in range(2, self.num_layers):
             z = z_vectors_by_layer[-layer]
-            sp = self.sigmoid_prime(z)
+            sp = self.sigmoid_derivative(z)
             delta = np.dot(self.weights[-layer + 1].transpose(), delta) * sp
             biases_by_layers[-layer] = delta
             weights_by_layers[-layer] = np.dot(delta, activations[-layer - 1].transpose())
@@ -67,40 +91,47 @@ class NetworkBase:
         return input
 
     def calculate_delta(self, activations, z_vectors_by_layer, y):
-        return self.cost_derivative(activations[-1], y) * \
-               self.sigmoid_prime(z_vectors_by_layer[-1])
+        return QuadraticCost.derivative(activations[-1], y) * \
+               self.sigmoid_derivative(z_vectors_by_layer[-1])
 
     @staticmethod
-    def cost_derivative(output_activations, y):
-        """Return the vector of partial derivatives
+    def sigmoid_derivative(z):
+        """Derivative of the sigmoid function.
 
-        \partial C_x / \partial a for the output activations."""
-        return output_activations - y
+        This function computes the gradient (also called the slope) of
+        the sigmoid function with respect to its input x.
 
-    @staticmethod
-    def sigmoid_prime(z):
-        """Derivative of the sigmoid function."""
-        return sigmoid(z) * (1 - sigmoid(z))
+        It is defined as:
+            sigmoid\_derivative(x) = \sigma'(x) = \sigma(x) (1 - \sigma(x))\tag{2}
+
+        :param z: a scalar or numpy array
+        :return the gradient value
+        """
+        sigmoid_value = sigmoid(z)
+        return sigmoid_value * (1 - sigmoid_value)
+
+    def export(self, filename):
+        """Save the neural network to the file ``filename``."""
+        data = {"sizes": self.layer_sizes,
+                "weights": [w.tolist() for w in self.weights],
+                "biases": [b.tolist() for b in self.biases],
+                "cost": str(self.cost_name())}
+        f = open(filename, "w")
+        json.dump(data, f)
+        f.close()
 
 
 class SimpleNetwork(NetworkBase):
 
     def __init__(self, sizes: List[int]):
-        """
-        The biases and weights in the Network object are all
-        initialized randomly, using the Numpy np.random.randn function
-        to generate Gaussian distributions with mean 0 and standard deviation 1.
-
-        Assumes that the first layer of neurons is an input layer.
-
-        :param sizes: the number of neurons in the respective layers.
-
-        Example:
-            >>> net = SimpleNetwork([2, 3, 1])
-        """
-        self.num_layers = len(sizes)
-        self.sizes = sizes
+        super().__init__(sizes)
         self.weights, self.biases = random_gaussian(sizes)
+
+    def cost_name(self):
+        return "Quadratic cost"
+
+    def load(self, filename):
+        raise NotImplementedError(f"TODO: implement load method in {self.__name__}")
 
     def sdg(self,
             training_data: Iterator[Tuple[np.ndarray, np.ndarray]],
@@ -204,11 +235,16 @@ class SimpleNetwork(NetworkBase):
 class ImprovedNetwork(NetworkBase):
 
     def __init__(self, layer_sizes, cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ration):
-        self.num_layers = len(layer_sizes)
-        self.layer_sizes = layer_sizes
+        super().__init__(layer_sizes)
         self.num_classes = layer_sizes[-1]
         self.weights, self.biases = weight_initializer(layer_sizes)
         self.cost_function = cost_function
+
+    def cost_name(self):
+        return self.cost_function.__name__
+
+    def load(self, filename):
+        raise NotImplementedError(f"TODO: implement load method in {self.__name__}")
 
     def sdg(self,
             training_data,
@@ -244,6 +280,7 @@ class ImprovedNetwork(NetworkBase):
         if validation_data:
             validation_data = list(validation_data)
 
+        # TODO: implement early stopping
         for epoch in range(epochs):
             random.shuffle(train_data)
             batches = [train_data[k: k + batch_size] for k in range(0, n, batch_size)]
@@ -251,6 +288,8 @@ class ImprovedNetwork(NetworkBase):
                 self.update_batch(batch, eta, lmbda, n)
 
             if monitor and validation_data is not None:
+                # monitoring the validation accuracy more often,
+                # per mini_batch maybe, or x * mini_batches
                 tr_acc, tr_cost, valid_acc, valid_cost = self._monitor(monitor, lmbda, train_data, validation_data)
                 train_costs.append(tr_cost)
                 train_acc.append(tr_acc)
