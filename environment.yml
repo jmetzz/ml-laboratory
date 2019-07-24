@@ -25,6 +25,7 @@ dependencies:
   - tensorflow
   - keras
   - ruamel_yaml
+  - orange3
   - pip:
     - awscli
     - python-dotenv
