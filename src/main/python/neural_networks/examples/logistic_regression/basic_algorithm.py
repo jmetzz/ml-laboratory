@@ -21,7 +21,7 @@ class IterativeBinaryLogisticRegression:
 
         # TODO: implement 'm' iterations
 
-        # Calculate the Logistic Regression Derivaties
+        # Calculate the Logistic Regression Derivatives
         # 1-step of Gradient Descent
 
         for x, y in train_data:
@@ -58,7 +58,7 @@ class VectorizedBinaryLogisticRegression:
 
         # TODO: implement 'm' iterations
 
-        # Calculate the Logistic Regression Derivaties
+        # Calculate the Logistic Regression Derivatives
         # 1-step of Gradient Descent
         # TODO: vectorize the loop
         for x, y in train_data:

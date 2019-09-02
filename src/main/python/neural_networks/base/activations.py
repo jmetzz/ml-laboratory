@@ -20,7 +20,7 @@ def sigmoid(z: np.ndarray) -> np.ndarray:
 
     Examples:
         >>> input = np.arange(-10, 10, 1)
-        >>> [sigmoid(input)
+        >>> sigmoid(input)
 
         >>> [sigmoid(x) for x in input]
     """
@@ -39,7 +39,7 @@ def tanh(z: np.ndarray) -> np.ndarray:
 
     Examples:
         >>> input = np.arange(-10, 10, 1)
-        >>> [tanh(input)
+        >>> tanh(input)
 
         >>> [tanh(x) for x in input]
 
@@ -60,7 +60,7 @@ def hypertang(z: np.ndarray) -> np.ndarray:
 
     Examples:
         >>> input = np.arange(-10, 10, 1)
-        >>> [hypertang(input)
+        >>> hypertang(input)
 
         >>> [hypertang(x) for x in input]
 
@@ -85,10 +85,15 @@ def softmax(z: np.ndarray) -> np.ndarray:
 
     Examples:
         >>> input = np.arange(-10, 10, 1)
-        >>> [softmax(input)
+        >>> softmax(input)
 
         >>> [softmax(x) for x in input]
     """
     z_exp = np.exp(z)
     z_sum = np.sum(z_exp, axis=1, keepdims=True)
     return z_exp / z_sum
+
+
+if __name__ == "__main__":
+    a = np.random.rand(3, 2)
+    print(sigmoid(a))

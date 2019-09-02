@@ -27,6 +27,7 @@ dependencies:
   - tensorflow
   - keras
   - ruamel_yaml
+  - h5py
   - pip:
     - python-dotenv
     - opencv-python

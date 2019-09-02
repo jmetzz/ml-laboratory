@@ -253,7 +253,8 @@ class ImprovedNetwork(NetworkBase):
             eta,
             lmbda=0.0,
             validation_data=None,
-            monitor=None):
+            monitor=None,
+            debug=False):
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -282,9 +283,17 @@ class ImprovedNetwork(NetworkBase):
 
         # TODO: implement early stopping
         for epoch in range(epochs):
+            if (debug): print(f"\n****\nStarting Epoch: {epoch}")
             random.shuffle(train_data)
             batches = [train_data[k: k + batch_size] for k in range(0, n, batch_size)]
+            if debug:
+                batch_num = 0
+                qtt_batches = len(batches)
             for batch in batches:
+                if debug:
+                    batch_num += 1
+                    print(f"\tProcessing batch {batch_num} of {qtt_batches}")
+
                 self.update_batch(batch, eta, lmbda, n)
 
             if monitor and validation_data is not None:
