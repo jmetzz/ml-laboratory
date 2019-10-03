@@ -4,9 +4,9 @@ from typing import List, Tuple, Iterator, Any, Sequence
 
 import numpy as np
 
-from neural_networks.base.activations import sigmoid
+from neural_networks.base.activations import sigmoid, relu
 from neural_networks.base.costs import CrossEntropyCost, QuadraticCost
-from neural_networks.base.initializers import random_gaussian, sqrt_connections_ration
+from neural_networks.base.initializers import random_gaussian, sqrt_connections_ratio
 from utils import data_helper
 
 
@@ -234,7 +234,7 @@ class SimpleNetwork(NetworkBase):
 
 class ImprovedNetwork(NetworkBase):
 
-    def __init__(self, layer_sizes, cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ration):
+    def __init__(self, layer_sizes, cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ratio):
         super().__init__(layer_sizes)
         self.num_classes = layer_sizes[-1]
         self.weights, self.biases = weight_initializer(layer_sizes)
@@ -391,3 +391,142 @@ class ImprovedNetwork(NetworkBase):
         if training_acc: print(f"\t training_acc: {training_acc:.5f}")
         if training_cost: print(f"\t training_cost: {training_cost:.5f}")
         print("-------")
+
+
+class DidaticCourseraNetwork:
+    
+    def forward(self, X, parameters):
+        """Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
+        
+        Arguments:
+            X -- data, numpy array of shape (input size, number of examples)
+            parameters -- output of initialize_parameters_deep()
+        
+        Returns:
+            AL -- last post-activation value
+            caches -- list of caches containing:
+                    every cache of linear_activation_forward() (there are L-1 of them, indexed from 0 to L-1)
+        """
+        caches = []
+        A = X
+        L = len(parameters) // 2                  # number of layers in the neural network
+        
+        # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
+        for l in range(1, L):
+            A_prev = A 
+            A, cache = self.linear_activation_forward(A_prev,
+                                                      parameters[f"W{l}"],
+                                                      parameters[f"b{l}"],
+                                                      activation=relu)
+            caches.append(cache)
+        
+        # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
+        AL, cache = self.linear_activation_forward(A,
+                                                   parameters[f"W{L}"],
+                                                   parameters[f"b{L}"],
+                                                   activation=sigmoid)
+        caches.append(cache)
+        assert(AL.shape == (1, X.shape[1]))
+        return AL, caches
+
+    def linear_activation_forward(self, A_prev, W, b, activation=relu):
+        """Implement the forward propagation for the LINEAR->ACTIVATION layer
+
+        Arguments:
+            A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
+            W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+            b -- bias vector, numpy array of shape (size of the current layer, 1)
+            activation -- the activation to be used in this layer
+
+        Returns:
+            A -- the output of the activation function, also called the post-activation value 
+            cache -- a python tuple containing "linear_cache" and "activation_cache";
+                stored for computing the backward pass efficiently
+        """
+        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+        Z, linear_cache = self.linear_forward(A_prev, W, b)
+        A, activation_cache = activation(Z)
+
+        assert (A.shape == (W.shape[0], A_prev.shape[1]))
+        cache = (linear_cache, activation_cache)
+        return A, cache
+
+    def linear_forward(self, A, W, b):
+        """
+        Implement the linear part of a layer's forward propagation.
+
+        Arguments:
+        A -- activations from previous layer (or input data): (size of previous layer, number of examples)
+        W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+        b -- bias vector, numpy array of shape (size of the current layer, 1)
+
+        Returns:
+        Z -- the input of the activation function, also called pre-activation parameter 
+        cache -- a python tuple containing "A", "W" and "b" ; stored for computing the backward pass efficiently
+        """
+        Z = np.dot(W, A) + b
+        assert(Z.shape == (W.shape[0], A.shape[1]))
+        cache = (A, W, b)
+        return Z, cache
+
+
+def linear_forward_test_case():
+    np.random.seed(1)
+    """
+    X = np.array([[-1.02387576, 1.12397796],
+ [-1.62328545, 0.64667545],
+ [-1.74314104, -0.59664964]])
+    W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
+    b = np.array([[1]])
+    """
+    A = np.random.randn(3,2)
+    W = np.random.randn(1,3)
+    b = np.random.randn(1,1)
+    return A, W, b
+
+def linear_activation_forward_test_case():
+    """
+    X = np.array([[-1.02387576, 1.12397796],
+ [-1.62328545, 0.64667545],
+ [-1.74314104, -0.59664964]])
+    W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
+    b = 5
+    """
+    np.random.seed(2)
+    A_prev = np.random.randn(3,2)
+    W = np.random.randn(1,3)
+    b = np.random.randn(1,1)
+    return A_prev, W, b
+
+def L_model_forward_test_case():
+    """
+    X = np.array([[-1.02387576, 1.12397796],
+ [-1.62328545, 0.64667545],
+ [-1.74314104, -0.59664964]])
+    parameters = {'W1': np.array([[ 1.62434536, -0.61175641, -0.52817175],
+        [-1.07296862,  0.86540763, -2.3015387 ]]),
+ 'W2': np.array([[ 1.74481176, -0.7612069 ]]),
+ 'b1': np.array([[ 0.],
+        [ 0.]]),
+ 'b2': np.array([[ 0.]])}
+    """
+    np.random.seed(1)
+    X = np.random.randn(4,2)
+    W1 = np.random.randn(3,4)
+    b1 = np.random.randn(3,1)
+    W2 = np.random.randn(1,3)
+    b2 = np.random.randn(1,1)
+    parameters = {"W1": W1,
+                  "b1": b1,
+                  "W2": W2,
+                  "b2": b2}
+    
+    return X, parameters
+
+if __name__ == "__main__":
+    A, W, b = linear_forward_test_case()
+
+    print("test case created")
+    net = DidaticCourseraNetwork()
+    Z, linear_cache = net.linear_forward(A, W, b)
+    print("Z = " + str(Z))
