@@ -3,7 +3,7 @@ import heapq
 
 from scipy.spatial import distance
 
-from utils import data_helper
+from utils import datasets
 
 
 class HClustering:
@@ -152,7 +152,4 @@ if __name__ == '__main__':
         precision
         recall
     """
-    # main(sys.argv[1], sys.argv[2])
-
-    data = data_helper.toy_unlabeled_dataset
-    main(data, 2)
+    main(datasets.toy_labelled_2d, 2)

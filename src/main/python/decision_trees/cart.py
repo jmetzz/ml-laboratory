@@ -1,204 +1,173 @@
-import pprint as pp
-
-from utils import data_helper
+import numpy as np
 
 
-def gini_index(groups, classes):
-    """Calculate the Gini index for a split dataset.
-    A perfect separation results in a Gini score of 0,
-    whereas the worst case split that results in
-    50/50 classes in each group result in a Gini
-    score of 0.5 (for a 2 class problem)
+class CART:
 
-    Args:
-        groups: the list of groups representing the data split.
-        Each group is comprised of data instances, where the last
-        attribute represents the class/label
+    def __init__(self, max_depth, min_size):
+        self.max_depth = max_depth
+        self.min_size = min_size
+        self._model = dict()
 
-        classes: the possible class values (labels) included in the domain
+    def fit(self, instances, true_labels):
+        self._model['dimensions'] = instances.shape[1]
+        self._model['labels'] = np.unique(true_labels)
+        self._model['root'] = root = self._select_split(instances, true_labels)
+        self._split_node(root, 1)
 
-    Returns: a float point number representing the Gini index for the given split
-    """
-    n_instances = sum([len(group) for group in groups])
-    gini = 0.0
-    for g in groups:
-        size = len(g)
-        if size == 0:
-            continue
-        score = 0.0
-        # score the group based on the proportion of each class
-        for class_val in classes:
-            proportion = [row[-1] for row in g].count(class_val) / size
-            score += proportion * proportion
-        # weight the group score by its relative size
-        gini += (1.0 - score) * (size / n_instances)
+    def predict(self, instances):
+        return [self._predict(self._model['root'], e) for e in instances]
 
-    return gini
-
-
-def split_on_attribute(index, value, dataset):
-    """Separate a given dataset into two lists of rows.
-
-    Args:
-        index: the attribute index
-        value: the split point of this attribute
-        dataset: the list of instances the represent the dataset
-
-    Returns: A tuple with the lists of instances according to the split,
-        where left list has instances for which the value of the given attribute
-        is less than split value, and the right list contains the other instances
-    """
-    left, right = list(), list()
-    for row in dataset:
-        if row[index] < value:
-            left.append(row)
+    @classmethod
+    def _predict(cls, node, instance):
+        if instance[node['index']] < node['value']:
+            if isinstance(node['left'], dict):
+                return cls._predict(node['left'], instance)
+            else:
+                return node['left']
         else:
-            right.append(row)
+            if isinstance(node['right'], dict):
+                return cls._predict(node['right'], instance)
+            else:
+                return node['right']
 
-    return left, right
+    def _select_split(self, instances, true_labels):
+        """Select the best split according to Gini Index
 
+            Args: the dataset
 
-def get_class_values(dataset):
-    return list(set([row[-1] for row in dataset]))
+            Returns: a tuple containing
+                index: the index of the best attribute to split the dataset
+                value: the slit value of the attribute
+                groups: the instances separated into groups according to the
+                split attribute and value
+            """
 
+        # define some variables to hold the best values found during computation
+        best_index, best_value, best_score, best_groups = 999, 999, 999, None
+        dimensions = self._model['dimensions']
 
-def select_split(dataset):
-    """Select the best split according to Gini Index
+        # iterate over the attributes and instances in the group
+        for feature in range(dimensions):
+            for instance in instances:
+                left_filter = instances[:, feature] < instance[feature]
+                left_idx = np.where(left_filter)
+                right_idx = np.where(np.invert(left_filter))
 
-    Args: the dataset
+                X_left = instances[left_idx]
+                y_left = true_labels[left_idx].reshape((-1, 1))
 
-    Returns: a tuple containing
-        index: the index of the best attribute to split the dataset
-        value: the slit value of the attribute
-        groups: the instances separated into groups according to the
-        split attribute and value
-    """
-    class_values = get_class_values(dataset)
+                X_right = instances[right_idx]
+                y_right = true_labels[right_idx].reshape((-1, 1))
 
-    # define some variables to hold the best values found during computation
-    b_index, b_value, b_score, b_groups = 999, 999, 999, None
+                gini = self.gini_index((y_left, y_right), len(X_left) + len(X_right))
 
-    # iterate over the attributes
-    for index in range(len(dataset[0]) - 1):
-        for row in dataset:
-            groups = split_on_attribute(index, row[index], dataset)
-            gini = gini_index(groups, class_values)
+                if gini < best_score:
+                    best_index, best_value = feature, instance[feature]
+                    best_score = gini
+                    best_groups = ((X_left, y_left), (X_right, y_right))
 
-            # debug info:
-            #     print('X%d < %.3f Gini=%.3f' % ((index+1), row[index], gini))
-            # ----
+        return {'index': best_index, 'value': best_value, 'groups': best_groups}
 
-            if gini < b_score:
-                b_index, b_value, b_score, b_groups = index, row[index], gini, groups
+    def _split_node(self, node, current_depth):
+        """Create child node splits for a given node
 
-    return {'index': b_index, 'value': b_value, 'groups': b_groups}
+            Or makes a terminal node when it is needed.
 
+            Args:
+                node:
+                max_depth:
+                min_size:
+                current_depth:
 
-def to_terminal_node(group):
-    """Creates a terminal node value comprising of all instances present in the given group
+            Returns:
+        """
+        (X_left, y_left), (X_right, y_right) = node['groups']
+        del (node['groups'])
 
-    Returns:
-        the majority label, i.e., the label used to classify the biggest amount of instances in the group
-    """
-    # get the label of each instance in the group
-    outcomes = [row[-1] for row in group]
-    return max(set(outcomes), key=outcomes.count)
+        # check for a no split
+        if not X_left.any() or not X_right.any():
+            node['left'] = node['right'] = self._to_terminal_node(np.vstack((y_left, y_right)))
+            return
 
+        # check for max depth
+        if current_depth >= self.max_depth:
+            node['left'], node['right'] = self._to_terminal_node(y_left), \
+                                          self._to_terminal_node(y_right)
+            return
 
-def split_node(node, max_depth, min_size, depth):
-    """Create child node splits for a given node, or makes a terminal node
-        when it is needed.
-
-    Args:
-        node:
-        max_depth:
-        min_size:
-        depth:
-
-    Returns:
-    """
-    left, right = node['groups']
-    del (node['groups'])
-
-    # check for a no split
-    if not left or not right:
-        node['left'] = node['right'] = to_terminal_node(left + right)
-        return
-
-    # check for max depth
-    if depth >= max_depth:
-        node['left'], node['right'] = to_terminal_node(left), to_terminal_node(right)
-        return
-
-    # process left child
-    if len(left) <= min_size:
-        node['left'] = to_terminal_node(left)
-    else:
-        # recursive step
-        node['left'] = select_split(left)
-        split_node(node['left'], max_depth, min_size, depth + 1)
-
-    # process right child
-    if len(right) <= min_size:
-        node['right'] = to_terminal_node(right)
-    else:
-        node['right'] = select_split(right)
-        split_node(node['right'], max_depth, min_size, depth + 1)
-
-
-def build_tree(train, max_depth, min_size):
-    root = select_split(train)
-    split_node(root, max_depth, min_size, 1)
-    return root
-
-
-def predict(node, row):
-    if row[node['index']] < node['value']:
-        if isinstance(node['left'], dict):
-            return predict(node['left'], row)
+        # process left child
+        if len(X_left) <= self.min_size:
+            node['left'] = self._to_terminal_node(y_left)
         else:
-            return node['left']
-    else:
-        if isinstance(node['right'], dict):
-            return predict(node['right'], row)
+            # recursive step
+            node['left'] = self._select_split(X_left, y_left)
+            self._split_node(node['left'], current_depth + 1)
+
+        # process right child
+        if len(X_right) <= self.min_size:
+            node['right'] = self._to_terminal_node(y_right)
         else:
-            return node['right']
+            node['right'] = self._select_split(X_right, y_right)
+            self._split_node(node['right'], current_depth + 1)
+
+    @staticmethod
+    def gini_index(groups, n_instances):
+        gini_value = 0.0
+        for g in groups:
+            size = len(g)
+            if size == 0:
+                continue
+
+            # score the group based on the proportion of each class
+            score = 0.0
+            labels, counts = np.unique(g, return_counts=True)
+            for label, count in zip(labels, counts):
+                proportion = count / size
+                score += proportion * proportion
+            # weight the group score by its relative size
+            gini_value += (1.0 - score) * (size / n_instances)
+
+        return gini_value
+
+    @staticmethod
+    def _to_terminal_node(labels):
+        """Creates a terminal node value
+
+            The created terminal node comprises of all instances present in the given group
+
+            Returns:
+                the label with the majority of elements in the group
+        """
+        labels, counts = np.unique(labels, return_counts=True)
+        return labels[np.argmax(counts)]
+
+    def summary(self):
+        print(self._model)
 
 
 if __name__ == '__main__':
-    # test Gini values
-    #   two groups of data with 2 rows in each group
-    #   Each group contains instances for which the last attribute represents the class
-    # print(gini_index([[[1, 0], [1, 0]], [[1, 1], [1, 1]]], [0, 1]))
-    # print(gini_index([[[1, 1], [1, 0]], [[1, 1], [1, 0]]], [0, 1]))
-    # print(gini_index([dataset[:7], dataset[7:]], [0, 1]))
+    import pprint as pp
+    from sklearn.datasets import load_iris
+    from sklearn.model_selection import train_test_split
+    from common.evaluation import accuracy
 
-    # test split dataset
-    # l, r = split(0, 4, dataset)
-    # print("Left:")
-    # pp.pprint(l)
-
-    # print("\nRight:")
-    # pp.pprint(r)
-
-    # test select split
-    # best_split = select_split(dataset)
-    # print('Split: [X%d < %.3f]' % ((best_split['index']+1), best_split['value']))
-
-    print("-" * len("Testing"))
-    print("Testing")
-    print("-" * len("Testing"))
-
-    stump = {'index': 0, 'right': 1, 'value': 6.642287351, 'left': 0}
+    mock_stump = {'index': 0, 'right': 1, 'value': 6.642287351, 'left': 0}
     print("Mock tree:")
-    pp.pprint(stump)
-    # print("\n\tprediction: {}".format(predict(stump, [2.771244718, 1.784783929, 0])))
+    print(mock_stump)
 
-    # print("\nTrained tree:")
-    # tree = build_tree(data_helper.toy_labeled_dataset, 4, 1)
-    # print("\n\tprediction: {}".format(predict(tree, [2.771244718, 1.784783929, 0])))
-    dataset_path = r'../data/raw/iris.data'
-    tree = build_tree(data_helper.load_dataset(dataset_path), 4, 1)
-    pp.pprint(tree)
+    X, y = load_iris(return_X_y=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=31)
 
-    print("\n\tprediction: {}".format(predict(tree, [6.2, 3.4, 5.4, 2.3, 0])))
+    model = CART(max_depth=4, min_size=1)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    acc = accuracy(y_test, predictions)
+    pp.pprint(model._model)
+    print('Accuracy is {0:.2f}'.format(acc))
+
+    model_stump = CART(max_depth=1, min_size=1)
+    model_stump.fit(X_train, y_train)
+    predictions = model_stump.predict(X_test)
+    acc = accuracy(y_test, predictions)
+    pp.pprint(model_stump._model)
+    print('Accuracy is {0:.2f}'.format(acc))
