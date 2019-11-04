@@ -2,7 +2,7 @@ import random
 
 from clustering import BaseClustering
 from common import distance
-from utils import data_helper
+from utils import datasets
 
 
 class KMeans(BaseClustering):
@@ -104,7 +104,7 @@ def report(centroids, model):
 
 
 if __name__ == '__main__':
-    data = data_helper.toy_unlabeled_dataset
+    data = datasets.toy_unlabelled_2d
 
     kmeans = KMeans(data)
     kmeans.build()

@@ -3,7 +3,7 @@ from typing import List
 import pandas as pd
 
 
-def one_hot_enconding(feature_values: List) -> List[List[int]]:
+def one_hot_encoding(feature_values: List) -> List[List[int]]:
     # TODO
     pass
 
@@ -13,7 +13,9 @@ if __name__ == "__main__":
                   'inv-nodes', 'node-caps', 'deg-malig', 'breast',
                   'breast-quad', 'irradiat']
     # read the data
-    dataset_path = r'../data/raw/breast-cancer.data'
+    dataset_path = r'../../../../data/raw/breast-cancer.data'
+    import os
+    print(os.getcwd())
     df = (pd.read_csv(dataset_path, header=None, names=cols_names)
           .replace({'?': 'unknown'}))  # NaN are represented by '?'
 

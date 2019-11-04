@@ -5,11 +5,12 @@
      for SVMs known as LIBSVM (https://www.csie.ntu.edu.tw/~cjlin/libsvm/).
 """
 
-from utils.data_helper import MNISTLoader
 from sklearn import svm
 
+from utils.dataset_loader import MNISTLoader
+
 if __name__ == "__main__":
-    training_data, validation_data, test_data = MNISTLoader.load_data('../data/processed/MNIST/mnist.pkl.gz')
+    training_data, validation_data, test_data = MNISTLoader.load_data('../../../../data/processed/MNIST/mnist.pkl.gz')
 
     clf = svm.SVC(gamma='auto')
     clf.fit(training_data[0], training_data[1])

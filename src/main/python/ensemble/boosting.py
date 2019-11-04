@@ -29,7 +29,7 @@ class BoostClassifier:
             assert (l is not None)
 
     def fit(self, instances, true_labels):
-        (X1, y1), (X2, y2), (X3, y3) = self.random_split(instances, true_labels)
+        (X1, y1), (X2, y2), (X3, y3) = self._random_split(instances, true_labels)
 
         # Train the 1st classifier
         self.classifiers[0].fit(X1, y1)
@@ -82,7 +82,7 @@ class BoostClassifier:
         return X3[disagree], y3[disagree]
 
     @staticmethod
-    def random_split(instances, true_labels):
+    def _random_split(instances, true_labels):
         X, y = shuffle(instances, true_labels, )
         split = len(instances) // 3
         return (X[:split], y[:split]), \

@@ -1,181 +1,156 @@
 from collections import Counter
-import pprint as pp
+import numpy as np
 
-"""Naive-Bayes algorithm implementation
 
-    This algorithm follows the statistical (Bayesian) approach.
-    The basic assumption is that the probability of a class C is given by
-    the posteriory probability P(C | x^i), where x^i refers to an entry in the test set.
+class NB:
+    """Naive-Bayes algorithm implementation
 
-    After some simplification the Bayes rule can be applyed as:
+        This algorithm follows the statistical (Bayesian) approach.
+        The basic assumption is that the probability of a class C is given by
+        the posteriory probability P(C | x^i), where x^i refers to an entry in the test set.
 
-	C = argmax P(C) . Product(P(x_i | C))
+        After some simplification the Bayes rule can be applied as:
 
-	where P(x_i | C)  is the conditional probability that feature i belongs to class C.
+        C = argmax P(C) . Product(P(x_i | C))
 
-	This probability can simply be calculated by the relative values of feature i per class.
+        where P(x_i | C)  is the conditional probability that feature i belongs to class C.
 
-    Naive Bayes Classifier method:
-        It is trained with a 2D-array X (dimensions m,n) and a 1D array Y (dimension 1,n).
-        X should have one column per feature (total n) and one row per training example (total m).
-        After training a hash table is filled with the class probabilities per feature.
-        We start with an empty hash table nb_dict, which has the form:
+        This probability can simply be calculated by the relative values of feature i per class.
 
-        nb_dict = {
-            'class1': {
-                'feature1': [],
-                'feature2': [],
-                (...)
-                'featuren': []
+        Naive Bayes Classifier method:
+            It is trained with a 2D-array X (dimensions m,n) and a 1D array Y (dimension 1,n).
+            X should have one column per feature (total n) and one row per training example (total m).
+            After training a hash table is filled with the class probabilities per feature.
+            We start with an empty hash table nb_dict, which has the form:
+
+            nb_dict = {
+                'class1': {
+                    'feature1': [],
+                    'feature2': [],
+                    (...)
+                    'featureN': []
+                }
+                'class2': {
+                    'feature1': [],
+                    'feature2': [],
+                    (...)
+                    'featureN': []
+                }
             }
-            'class2': {
-                'feature1': [],
-                'feature2': [],
-                (...)
-                'featuren': []
-            }
-        }
-"""
-
-
-def get_class_values(dataset):
-    return list(set(row[-1] for row in dataset))
-
-
-def relative_occurrence(values):
-    """Counts the relative occurrence of each given value in the list
-    regarding the total number of elements
-
-    Args:
-        values: a list of elements
-
-    Returns: a dictionary with the input elements as key and
-        their relative frequency as values
     """
-    # A Counter is a dict subclass for counting hashable objects.
-    # It is an unordered collection where elements
-    # are stored as dictionary keys and their counts are stored as dictionary values.
-    # Counts are allowed to be any integer value including zero or negative counts.
-    # The Counter class is similar to bags or multisets in other languages.
-    counter_dict = dict(Counter(values))
-    size = len(values)
-    for key in counter_dict.keys():
-        counter_dict[key] = counter_dict[key] / float(size)
-    return counter_dict
 
+    def __init__(self):
+        self.model = dict()
 
-def train(data):
-    labels = get_class_values(data)
-    no_features = len(data[0]) - 1
-    label_idx = no_features
+    def fit(self, instances, true_labels):
+        # the model is implemented as a dictionary of classes and feature relative frequencies
+        self.model = self._create_internal_model(instances, true_labels)
+        internal_model = self.model['nb_dict']
+        labels = self.model['labels']
+        dimension = self.model['dimension']
 
-    # the model is implemented as a dictionary of classes and feature relative frequencies
-    nb_model = create_model(labels, no_features)
+        # first step is to isolate all instances of the same class
+        # and populate the model with all occurrences of each feature value
+        # per class
+        for label in labels:
+            subset_l = instances[true_labels == label]
+            # print(subset_l)
 
-    # first step is to isolate all instances of the same class
-    # and populate the model with all occurrences of each feature value
-    # per class
-    for l in labels:
-        subset_l = [e for e in data if e[label_idx] == l]
-        # print(subset_l)
+            # capture all occurrences of feature values in this subset
+            # keep them per class label and feature
+            for feature in range(dimension):
+                internal_model[label][feature] = subset_l[:, feature]
 
-        # capture all occurrences of feature values in this subset
-        # keep them per class label and feature
-        for feature in range(no_features):
-            nb_model[l][feature] = column_values(subset_l, feature)
+        # second step is to calculate the actual probability for each feature value
+        # based on the relative occurrence per class in the class
+        for label in labels:
+            for feature in range(dimension):
+                internal_model[label][feature] = self._relative_occurrence(internal_model[label][feature])
 
-    # second step is to calculate the actual probability for each feature value
-    # based on the relative occurrence per class in the class
-    for l in labels:
-        for feature in range(no_features):
-            nb_model[l][feature] = relative_occurrence(nb_model[l][feature])
+        # Save the class probabilities
+        self.model['probabilities'] = self._relative_occurrence(true_labels)
 
-    classes_probabilities = relative_occurrence([row[-1] for row in data])
-    return classes_probabilities, nb_model
+    def predict(self, instances):
+        """Predict the class label for the given list of instances.
 
+            Args:
+                instances: the list of instances to classify
+            Return:
+                the list of predictions
+        """
+        return [self._predict(e) for e in instances]
 
-def test(model, classes_probabilities, data):
-    return [classify(model, classes_probabilities, e) for e in data]
+    def _predict(self, instance):
+        """Predict the class label for the given instance.
 
+            Args:
+                instance: the unlabelled instance to be classified
+            Return:
+                the class label
+        """
 
-def get_class_with_highest_probability(prediction):
-    values = list(prediction.values())
-    max_value_index = values.index(max(values))
-    return list(prediction.keys())[max_value_index]
+        # First we determine the class-probability of each class,
+        # and then predict the class with the highest probability
+        nb_dict = self.model['nb_dict']
+        labels = self.model['labels']
+        scores = [-1] * len(labels)
+        # label_map = dict()
+        for index, label in enumerate(labels):
+            # label_map[index] = label
+            c_prob = self.model['probabilities'][label]
+            for feature in range(self.model['dimension']):
+                relative_feature_values = nb_dict[label][feature]
+                if instance[feature] in relative_feature_values.keys():
+                    c_prob *= relative_feature_values[instance[feature]]
+                else:
+                    c_prob *= 0
+            scores[index] = c_prob
+        return labels[np.argmax(scores)]
 
+    @staticmethod
+    def _relative_occurrence(values):
+        """Counts the relative occurrence of each given value in the list
+        regarding the total number of elements
 
-def classify(model, classes_probabilities, instance):
-    """
-    :return: C = argmax P(C) . Product(P(x_i | C))
-    """
-    prediction = {}
-    # First we determine the class-probability of each class, and then we determine the class with the highest probability
-    for l in model.keys():
-        c_prob = classes_probabilities[l]
-        for f in range(len(instance)):
-            relative_feature_values = model[l][f]
-            if instance[f] in relative_feature_values.keys():
-                c_prob *= relative_feature_values[instance[f]]
-            else:
-                c_prob *= 0
-        prediction[l] = c_prob
-    return get_class_with_highest_probability(prediction)
+        Args:
+            values: a list of elements
 
+        Returns: a dictionary with the input elements as key and
+            their relative frequency as values
+        """
+        # A Counter is a dict subclass for counting hashable objects.
+        # It is an unordered collection where elements
+        # are stored as dictionary keys and their counts are stored as dictionary values.
+        # Counts are allowed to be any integer value including zero or negative counts.
+        # The Counter class is similar to bags or multisets in other languages.
+        counter_dict = dict(Counter(values))
+        size = len(values)
+        for key in counter_dict.keys():
+            counter_dict[key] = counter_dict[key] / float(size)
+        return counter_dict
 
-def column_values(data, col):
-    return [row[col] for row in data]
-
-
-def create_model(labels, no_features):
-    nb_dict = {}
-    for label in labels:
-        feature_map = {f: [] for f in range(no_features)}
-        nb_dict[label] = feature_map
-    return nb_dict
-
-
-def remove_labels(input_data):
-    return [d[:-1] for d in input_data]
-
-
-def accuracy(test_set, predictions):
-    correct = 0
-    for x in range(len(test_set)):
-        if test_set[x][-1] == predictions[x]:
-            correct += 1
-    return (correct / float(len(test_set))) * 100.0
-
-
-def main():
-    train_data = [['Sunny', 'Hot', 'High', 'Weak', 'No'],
-                  ['Sunny', 'Hot', 'High', 'Strong', 'No'],
-                  ['Overcast', 'Hot', 'High', 'Weak', 'Yes'],
-                  ['Rain', 'Mild', 'High', 'Weak', 'Yes'],
-                  ['Rain', 'Cool', 'Normal', 'Weak', 'Yes'],
-                  ['Rain', 'Cool', 'Normal', 'Strong', 'No'],
-                  ['Overcast', 'Cool', 'Normal', 'Strong', 'Yes'],
-                  ['Sunny', 'Mild', 'High', 'Weak', 'No'],
-                  ['Sunny', 'Cool', 'Normal', 'Weak', 'Yes']]
-
-    test_data = [['Rain', 'Mild', 'Normal', 'Weak', 'Yes'],
-                 ['Sunny', 'Mild', 'Normal', 'Strong', 'Yes'],
-                 ['Overcast', 'Mild', 'High', 'Strong', 'Yes'],
-                 ['Overcast', 'Hot', 'Normal', 'Weak', 'Yes'],
-                 ['Rain', 'Mild', 'High', 'Strong', 'No']]
-
-    classes_probabilities, model = train(train_data)
-    # pp.pprint(model) # debug print
-    # pp.pprint(classes_probabilities)
-
-    prediction = test(model, classes_probabilities, remove_labels(test_data))
-    print(" ------- Test data: -------")
-    pp.pprint(test_data)
-    print(" ------- Prediction result: -------")
-    pp.pprint(prediction)  # debug print
-
-    acc = accuracy(test_data, prediction)
-    print('Accuracy is {0:.2f}'.format(acc))
+    @staticmethod
+    def _create_internal_model(instances, true_labels):
+        model = dict()
+        model['dimension'] = instances.shape[1]
+        model['labels'] = np.unique(true_labels)
+        model['num_labels'] = len(model['labels'])
+        model['nb_dict'] = {}
+        for label in model['labels']:
+            feature_map = {f: [] for f in range(model['dimension'])}
+            model['nb_dict'][label] = feature_map
+        model['probabilities'] = None
+        return model
 
 
 if __name__ == '__main__':
-    main()
+    from utils import datasets
+    from common.evaluation import accuracy
+
+    X_train, y_train, X_test, y_test = datasets.play_tennis()
+    model = NB()
+    model.fit(X_train, y_train)
+
+    prediction = model.predict(X_test)
+    acc = accuracy(y_test, prediction)
+    print('Accuracy is {0:.2f}'.format(acc))
