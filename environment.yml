@@ -16,7 +16,6 @@ dependencies:
   - pandas
   - scikit-learn
   - scikit-image
-  - scikit-multilearn
   - matplotlib
   - seaborn
   - statsmodels
