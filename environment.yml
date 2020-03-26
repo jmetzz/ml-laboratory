@@ -16,18 +16,29 @@ dependencies:
   - pandas
   - scikit-learn
   - scikit-image
+  - scikit-multilearn
   - matplotlib
   - seaborn
   - statsmodels
   - plotly
   - pillow
-  - jupyter
   - nb_conda_kernels
   - nb_conda
+  - jupyter
+  - jupyterlab
+  - widgetsnbextension
+  - jupyter_contrib_nbextensions
+  - jupyter_nbextensions_configurator
+  - ipywidgets
   - tensorflow
   - keras
   - ruamel_yaml
   - h5py
+  - xgboost
+  - catboost
+  - shap
+  - mypy
+  - pyarrow
   - pip:
     - python-dotenv
     - opencv-python
