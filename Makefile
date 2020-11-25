@@ -1,46 +1,59 @@
-.PHONY: clean data lint sync_data_to_s3 sync_data_from_s3
+BLACK ?= \033[0;30m
+RED ?= \033[0;31m
+GREEN ?= \033[0;32m
+YELLOW ?= \033[0;33m
+BLUE ?= \033[0;34m
+PURPLE ?= \033[0;35m
+CYAN ?= \033[0;36m
+GRAY ?= \033[0;37m
+COFF ?= \033[0m
 
-#################################################################################
-# GLOBALS                                                                       #
-#################################################################################
+.PHONY: deps check test clean lint bastion
+.EXPORT_ALL_VARIABLES:
 
-PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
-PROJECT_NAME = ml-laboratory
-PYTHON_INTERPRETER = python3
 
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
 
-#################################################################################
-# COMMANDS                                                                      #
-#################################################################################
+##################
+# Local commands #
+##################
 
-## Install Python Dependencies
-create_env:
-ifeq (True,$(HAS_CONDA))
-	conda env create -n $(PROJECT_NAME) -f environment.yml
-else
-	@echo "Conda is not installed in your box."
-	@echo "Please install it first. See how at https://docs.conda.io/en/latest/miniconda.html"
-endif
 
-## Make Dataset
-data: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+## Install project dependencies
+deps:
+	@printf "$(CYAN)Updating git submodules and python deps$(COFF)\n"
+	pip3 install -U poetry
+	poetry install
 
-## Delete all compiled Python files
+## Run static code checkers and linters
+check:
+	@printf "$(CYAN)Running static code analysis, tests and license generation$(COFF)\n"
+	poetry run flake8
+	poetry run black --check algos
+	poetry run mypy src --ignore-missing-imports
+	poetry run pip-licenses --with-authors -f markdown --output-file licenses.md
+
+## Run unit tests
+test:
+	@printf "$(CYAN)Running test suite$(COFF)\n"
+	poetry run pytest --cov=src
+
+## Remove temporary files created during build and all compiled Python files
 clean:
+	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
-## Lint using flake8
+## Runs black formatter
 lint:
-	flake8 src
+	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
+	poetry run black src tests
+
+## Connect to the dev db with a port FWD (Broadcasts on local 12.0.0.1:5432)
+bastion:
+	@printf "$(GREEN)Postgres will be listening on 127.0.0.1:5432$(COFF)\n"
+	gcloud compute ssh test-connectivity-vm --project "$(GCP_PROJECT)"  --zone "$(GCP_ZONE)" --ssh-flag="-L 127.0.0.1:$(DB_PORT):$(TARGET_HOST_NAME):$(DB_PORT) -Nv"
 
 ## Upload Data to S3
 sync_data_to_s3:
@@ -59,20 +72,11 @@ else
 endif
 
 
-
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
-
-
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
 
 .DEFAULT_GOAL := help
-
 # Inspired by <http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html>
 # sed script explained:
 # /^##/:
