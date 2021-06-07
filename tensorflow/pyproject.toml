@@ -5,11 +5,12 @@ description = "Machine Learning lab code & examples"
 authors = ["Jean Metz"]
 
 [tool.poetry.dependencies]
-python = "3.9.2"
-jupyterlab = { version = "^3.0.16", optional = true }
-ipywidgets = { version = "^7.6.3", optional = true }
-ipykernel = { version = "^5.5.5", optional = true }
-
+python = "3.8.2"
+jupyterlab = {version = "^3.0.16", optional = true}
+ipykernel = {version = "^5.5.5", optional = true}
+ipywidgets = {version = "^7.6.3", optional = true}
+tensorflow = "^2.5.0"
+keras = "^2.4.3"
 
 [tool.poetry.dev-dependencies]
 black = "^21.5b2"               # The uncompromising code formatter.
