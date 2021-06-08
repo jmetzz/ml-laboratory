@@ -84,38 +84,24 @@ def play_tennis():
     return features_train, labels_train, features_test, labels_test
 
 
-def linear_forward_test_case():
-    np.random.seed(1)
-    """
-    X = np.array([[-1.02387576, 1.12397796],
- [-1.62328545, 0.64667545],
- [-1.74314104, -0.59664964]])
-    W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
-    b = np.array([[1]])
-    """
-    A = np.random.randn(3, 2)
-    W = np.random.randn(1, 3)
-    b = np.random.randn(1, 1)
-
-    return A, W, b
-
-
-def linear_activation_forward_test_case():
+def linear_forward_test_case(num_elements: int = 3, num_features: int = 2, seed: int = 43):
     """
        X = np.array([[-1.02387576, 1.12397796],
     [-1.62328545, 0.64667545],
     [-1.74314104, -0.59664964]])
        W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
-       b = 5
+       b = np.array([[1]])
     """
-    np.random.seed(2)
-    A_prev = np.random.randn(3, 2)
-    W = np.random.randn(1, 3)
-    b = np.random.randn(1, 1)
-    return A_prev, W, b
+    np.random.seed(seed)
+
+    data = np.random.randn(num_elements, num_features)
+    weights = np.random.randn(1, num_elements)
+    bias = np.random.randn(1, 1)
+
+    return data, weights, bias
 
 
-def L_model_forward_test_case():
+def l_model_forward_test_case(num_elements: int = 3, num_features: int = 2, seed: int = 43):
     """
        X = np.array([[-1.02387576, 1.12397796],
     [-1.62328545, 0.64667545],
@@ -127,15 +113,18 @@ def L_model_forward_test_case():
            [ 0.]]),
     'b2': np.array([[ 0.]])}
     """
-    np.random.seed(1)
-    X = np.random.randn(4, 2)
-    W1 = np.random.randn(3, 4)
-    b1 = np.random.randn(3, 1)
-    W2 = np.random.randn(1, 3)
-    b2 = np.random.randn(1, 1)
-    parameters = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
+    np.random.seed(seed)
+    data = np.random.randn(num_elements, num_features)
 
-    return X, parameters
+    weights_1 = np.random.randn(num_elements - 1, num_elements)
+    bias_1 = np.random.randn(num_elements - 1, 1)
+
+    weights_2 = np.random.randn(1, num_elements - 1)
+    bias_2 = np.random.randn(1, 1)
+
+    parameters = {"W1": weights_1, "b1": bias_1, "W2": weights_2, "b2": bias_2}
+
+    return data, parameters
 
 
 class MNISTLoader:
@@ -232,8 +221,8 @@ def amazon():
             data = json.loads(line)
 
             if data["overall"] == 3:
-                next
-            elif data["overall"] == 4 or data["overall"] == 5:
+                continue
+            if data["overall"] == 4 or data["overall"] == 5:
                 label = 1
             elif data["overall"] == 1 or data["overall"] == 2:
                 label = 0
