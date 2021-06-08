@@ -149,9 +149,9 @@ if __name__ == "__main__":
     from utils import datasets
 
     X_train, y_train, X_test, y_test = datasets.play_tennis()
-    model = NB()
-    model.fit(X_train, y_train)
+    nb_model = NB()
+    nb_model.fit(X_train, y_train)
 
-    prediction = model.predict(X_test)
+    prediction = nb_model.predict(X_test)
     acc = accuracy(y_test, prediction)
-    print("Accuracy is {0:.2f}".format(acc))
+    print(f"Accuracy is {acc:.2f}")

@@ -1,5 +1,3 @@
-from timeit import timeit
-
 import numpy as np
 
 # Create an array with 10^7 elements

@@ -1,5 +1,6 @@
-from keras.datasets import imdb
 import numpy as np
+from keras.datasets import imdb
+
 
 def load_imdb_pickle(vocabulary_size=1000):
     """Loads the keras imdb dataset

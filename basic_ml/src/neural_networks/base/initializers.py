@@ -1,9 +1,9 @@
-from typing import Dict, List, Sequence, Tuple
+from collections import Sequence
 
 import numpy as np
 
 
-def random_gaussian(layer_sizes: Sequence) -> Tuple[List, List]:
+def random_gaussian(layer_sizes: Sequence) -> tuple[list, list]:
     """Initializes the weights and biases using Gaussian random variables
 
     Assumes that the first layer of neurons is an input layer,
@@ -18,7 +18,7 @@ def random_gaussian(layer_sizes: Sequence) -> Tuple[List, List]:
     return weights, biases
 
 
-def sqrt_connections_ratio(layer_sizes: Sequence) -> Tuple[List, List]:
+def sqrt_connections_ratio(layer_sizes: Sequence) -> tuple[list, list]:
     """Weights are initialized using Gaussian divided by the square root of the number of connections
 
     Assumes that the first layer of neurons is an input layer.
@@ -38,7 +38,7 @@ def sqrt_connections_ratio(layer_sizes: Sequence) -> Tuple[List, List]:
     return weights, biases
 
 
-def dnn_parameters_initializer(layer_dims: List[int]) -> dict:
+def dnn_parameters_initializer(layer_dims: list[int]) -> dict:
     """Initialized weights using Gaussian divided by the square root of the number of connections
 
     Assumes that the first layer of neurons is an input layer.
@@ -61,9 +61,9 @@ def dnn_parameters_initializer(layer_dims: List[int]) -> dict:
     """
 
     parameters = {}
-    L = len(layer_dims)  # number of layers in the network
+    num_layers = len(layer_dims)  # number of layers in the network
 
-    for l in range(1, L):
-        parameters["W" + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) * 0.01
-        parameters["b" + str(l)] = np.zeros((layer_dims[l], 1))
+    for layer in range(1, num_layers):
+        parameters["W" + str(layer)] = np.random.randn(layer_dims[layer], layer_dims[layer - 1]) * 0.01
+        parameters["b" + str(layer)] = np.zeros((layer_dims[layer], 1))
     return parameters

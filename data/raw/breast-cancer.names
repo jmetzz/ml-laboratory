@@ -1,33 +1,33 @@
 Citation Request:
    This breast cancer domain was obtained from the University Medical Centre,
-   Institute of Oncology, Ljubljana, Yugoslavia.  Thanks go to M. Zwitter and 
+   Institute of Oncology, Ljubljana, Yugoslavia.  Thanks go to M. Zwitter and
    M. Soklic for providing the data.  Please include this citation if you plan
    to use this database.
 
 1. Title: Breast cancer data (Michalski has used this)
 
-2. Sources: 
+2. Sources:
    -- Matjaz Zwitter & Milan Soklic (physicians)
-      Institute of Oncology 
+      Institute of Oncology
       University Medical Center
       Ljubljana, Yugoslavia
    -- Donors: Ming Tan and Jeff Schlimmer (Jeffrey.Schlimmer@a.gp.cs.cmu.edu)
    -- Date: 11 July 1988
 
 3. Past Usage: (Several: here are some)
-     -- Michalski,R.S., Mozetic,I., Hong,J., & Lavrac,N. (1986). The 
-        Multi-Purpose Incremental Learning System AQ15 and its Testing 
-        Application to Three Medical Domains.  In Proceedings of the 
+     -- Michalski,R.S., Mozetic,I., Hong,J., & Lavrac,N. (1986). The
+        Multi-Purpose Incremental Learning System AQ15 and its Testing
+        Application to Three Medical Domains.  In Proceedings of the
         Fifth National Conference on Artificial Intelligence, 1041-1045,
         Philadelphia, PA: Morgan Kaufmann.
         -- accuracy range: 66%-72%
-     -- Clark,P. & Niblett,T. (1987). Induction in Noisy Domains.  In 
+     -- Clark,P. & Niblett,T. (1987). Induction in Noisy Domains.  In
         Progress in Machine Learning (from the Proceedings of the 2nd
-        European Working Session on Learning), 11-30, Bled, 
+        European Working Session on Learning), 11-30, Bled,
         Yugoslavia: Sigma Press.
         -- 8 test results given: 65%-72% accuracy range
-     -- Tan, M., & Eshelman, L. (1988). Using weighted networks to 
-        represent classification knowledge in noisy domains.  Proceedings 
+     -- Tan, M., & Eshelman, L. (1988). Using weighted networks to
+        represent classification knowledge in noisy domains.  Proceedings
         of the Fifth International Conference on Machine Learning, 121-134,
         Ann Arbor, MI.
         -- 4 systems tested: accuracy range was 68%-73.5%
