@@ -1,12 +1,28 @@
+import gzip
 import json
+import pickle
+from pathlib import Path
 
 import numpy as np
 
-toy_labelled_1d = np.array(
-    [[0.1, 1], [0.2, 1], [0.3, 1], [0.4, -1], [0.5, -1], [0.6, -1], [0.7, -1], [0.8, 1], [0.9, 1], [1.0, 1]]
+from utils.data_helper import as_vector
+
+TOY_1D = np.array(
+    [
+        [0.1, 1],
+        [0.2, 1],
+        [0.3, 1],
+        [0.4, -1],
+        [0.5, -1],
+        [0.6, -1],
+        [0.7, -1],
+        [0.8, 1],
+        [0.9, 1],
+        [1.0, 1],
+    ]
 )
 
-toy_labelled_2d = np.array(
+TOY_2D = np.array(
     [
         [2.771244718, 1.784783929, 0],
         [1.728571309, 1.169761413, 0],
@@ -21,7 +37,7 @@ toy_labelled_2d = np.array(
     ]
 )
 
-toy_unlabelled_2d = np.array(
+TOY_2D_UNLABELLED = np.array(
     [
         [2.771244718, 1.784783929],
         [1.728571309, 1.169761413],
@@ -38,7 +54,7 @@ toy_unlabelled_2d = np.array(
 
 
 def play_tennis():
-    X_train = np.array(
+    features_train = np.array(
         [
             ["Sunny", "Hot", "High", "Weak"],
             ["Sunny", "Hot", "High", "Strong"],
@@ -52,9 +68,9 @@ def play_tennis():
         ]
     )
 
-    y_train = np.array(["No", "No", "Yes", "Yes", "Yes", "No", "Yes", "No", "Yes"])
+    labels_train = np.array(["No", "No", "Yes", "Yes", "Yes", "No", "Yes", "No", "Yes"])
 
-    X_test = np.array(
+    features_test = np.array(
         [
             ["Rain", "Mild", "Normal", "Weak"],
             ["Sunny", "Mild", "Normal", "Strong"],
@@ -64,8 +80,141 @@ def play_tennis():
         ]
     )
 
-    y_test = np.array(["Yes", "Yes", "Yes", "Yes", "No"])
-    return X_train, y_train, X_test, y_test
+    labels_test = np.array(["Yes", "Yes", "Yes", "Yes", "No"])
+    return features_train, labels_train, features_test, labels_test
+
+
+def linear_forward_test_case():
+    np.random.seed(1)
+    """
+    X = np.array([[-1.02387576, 1.12397796],
+ [-1.62328545, 0.64667545],
+ [-1.74314104, -0.59664964]])
+    W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
+    b = np.array([[1]])
+    """
+    A = np.random.randn(3, 2)
+    W = np.random.randn(1, 3)
+    b = np.random.randn(1, 1)
+
+    return A, W, b
+
+
+def linear_activation_forward_test_case():
+    """
+       X = np.array([[-1.02387576, 1.12397796],
+    [-1.62328545, 0.64667545],
+    [-1.74314104, -0.59664964]])
+       W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
+       b = 5
+    """
+    np.random.seed(2)
+    A_prev = np.random.randn(3, 2)
+    W = np.random.randn(1, 3)
+    b = np.random.randn(1, 1)
+    return A_prev, W, b
+
+
+def L_model_forward_test_case():
+    """
+       X = np.array([[-1.02387576, 1.12397796],
+    [-1.62328545, 0.64667545],
+    [-1.74314104, -0.59664964]])
+       parameters = {'W1': np.array([[ 1.62434536, -0.61175641, -0.52817175],
+           [-1.07296862,  0.86540763, -2.3015387 ]]),
+    'W2': np.array([[ 1.74481176, -0.7612069 ]]),
+    'b1': np.array([[ 0.],
+           [ 0.]]),
+    'b2': np.array([[ 0.]])}
+    """
+    np.random.seed(1)
+    X = np.random.randn(4, 2)
+    W1 = np.random.randn(3, 4)
+    b1 = np.random.randn(3, 1)
+    W2 = np.random.randn(1, 3)
+    b2 = np.random.randn(1, 1)
+    parameters = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
+
+    return X, parameters
+
+
+class MNISTLoader:
+    """A helper class to load the MNIST image data.
+
+    For details of the data structures that are returned,
+    see the doc strings for ``load_data`` and ``load_data_wrapper``.
+
+    The original data set is available at: http://yann.lecun.com/exdb/mnist/
+    """
+
+    @staticmethod
+    def load_data(
+        path: str,
+    ) -> tuple[tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray], tuple[np.ndarray, np.ndarray],]:
+        """Loads the MNIST data as a tuple of training, validation, and test data.
+
+        :return: training_data, validation_data, test_data
+
+            The ``training_data`` is returned as a tuple with two entries.
+            The first entry contains the actual training images.  This is a
+            numpy ndarray with 50,000 entries.  Each entry is, in turn, a
+            numpy ndarray with 784 values, representing the 28 * 28 = 784
+            pixels in a single MNIST image.
+
+            The second entry in the ``training_data`` tuple is a numpy ndarray
+            containing 50,000 entries.  Those entries are just the digit
+            values for the corresponding images contained in the first
+            entry of the tuple.
+
+            The ``validation_data`` and ``test_data`` are similar, except
+            each contains only 10,000 images.
+
+            This is a nice data format, but for use in neural networks it's
+            helpful to modify the format of the ``training_data`` a little.
+            That's done in the wrapper function ``load_data_wrapper()``, see
+            below.
+        """
+        file_obj = gzip.open(path, "rb")
+        train, validation, test = pickle.load(file_obj, encoding="latin1")
+        file_obj.close()
+        return train, validation, test
+
+    @classmethod
+    def load_data_wrapper(cls, path: str):
+        """Loads the wrapped MNIST data (tuple of training, validation, and test data)
+
+        The wrapped format is more convenient for use in the implementation
+        of neural networks.
+
+        In particular, ``training_data`` is a list containing 50,000
+        2-tuples ``(x, y)``.
+            ``x`` is a 784-dimensional numpy.ndarray containing the input image.
+            ``y`` is a 10-dimensional numpy.ndarray representing the unit vector
+                  corresponding to the correct digit for ``x``.
+
+        ``validation_data`` and ``test_data`` are lists containing 10,000
+        2-tuples ``(x, y)``.  In each case,
+            ``x`` is a 784-dimensional numpy.ndarray containing the input image.
+            ``y`` is the corresponding classification, i.e., the digit values (integers)
+                  corresponding to ``x``.
+
+        This means slightly different formats for
+        the training data and the validation/test data. These formats
+        turn out to be the most convenient for use in our neural network
+        code."""
+        tr_d, va_d, te_d = cls.load_data(path)
+
+        train_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
+        train_results = [as_vector(y, 10) for y in tr_d[1]]
+        train_data = zip(train_inputs, train_results)
+
+        validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
+        validation_data = zip(validation_inputs, va_d[1])
+
+        test_inputs = [np.reshape(x, (784, 1)) for x in te_d[0]]
+        test_data = zip(test_inputs, te_d[1])
+
+        return train_data, validation_data, test_data
 
 
 def amazon():
@@ -78,8 +227,8 @@ def amazon():
     test_review_text = []
     test_labels = []
 
-    with open(filename, "r") as f:
-        for (i, line) in enumerate(f):
+    with Path(filename).open() as file_obj:
+        for (idx, line) in enumerate(file_obj):
             data = json.loads(line)
 
             if data["overall"] == 3:
@@ -94,7 +243,7 @@ def amazon():
             summary = data["summary"]
             review_text = data["reviewText"]
 
-            if i % 10 == 0:
+            if idx % 10 == 0:
                 test_summary.append(summary)
                 test_review_text.append(review_text)
                 test_labels.append(label)
@@ -103,12 +252,20 @@ def amazon():
                 train_review_text.append(review_text)
                 train_labels.append(label)
 
-    return (train_summary, train_review_text, train_labels), (test_summary, test_review_text, test_labels)
+    return (train_summary, train_review_text, train_labels), (
+        test_summary,
+        test_review_text,
+        test_labels,
+    )
 
 
 def load_amazon_smaller(size=20000):
-    (train_summary, train_review_text, train_labels), (test_summary, test_review_text, test_labels) = amazon()
-    return (train_summary[:size], train_review_text[:size], np.array(train_labels[:size])), (
+    (train_summary, train_review_text, train_labels), (
+        test_summary,
+        test_review_text,
+        test_labels,
+    ) = amazon()
+    return (train_summary[:size], train_review_text[:size], np.array(train_labels[:size]),), (
         test_summary[:size],
         test_review_text[:size],
         np.array(test_labels[:size]),

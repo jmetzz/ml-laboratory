@@ -17,9 +17,9 @@ then y(x)=[0,0,0,0,0,0,1,0,0,0]^T is the desired output from the network.
 
 
 The loss function is the 'mean squared error' (or just MSE):
-\begin{eqnarray}  C(w,b) \equiv
-  \frac{1}{2n} \sum_x \| y(x) - a\|^2.
-\tag{6}\end{eqnarray}
+\begin{eqnarray}  C(w,b) \\equiv
+  \frac{1}{2n} \\sum_x \\| y(x) - a\\|^2.
+\tag{6}\\end{eqnarray}
 
 
 w  denotes the collection of all weights in the network, b all the biases,

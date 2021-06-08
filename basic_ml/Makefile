@@ -1,3 +1,15 @@
+.PHONY: all $(MAKECMDGOALS)
+.EXPORT_ALL_VARIABLES:
+SHELL := /bin/bash -euo pipefail
+
+
+PYTHON_VERSION = 3.9.2
+PYTHON_INTERPRETER = python3
+PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+# common help message
+NOT_INSTALLED_MSG = "not installed. Make sure you have run 'make environment'"
+
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
 GREEN ?= \033[0;32m
@@ -8,47 +20,81 @@ CYAN ?= \033[0;36m
 GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
-.PHONY: deps check test clean lint bastion
-.EXPORT_ALL_VARIABLES:
-
-BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
-PROFILE = default
-
-
 ##################
 # Local commands #
 ##################
 
+## Run all make commands (environment test clean check format)
+all: clean lint check test
+
+
+ifeq (,$(shell which pyenv))
+HAS_PYENV=False
+else
+HAS_PYENV=True
+endif
+
+
+install_pyenv:
+ifeq (,$(shell which pyenv))
+	@printf "$(CYAN)>>> Installing pyenv ...$(COFF)\n"
+	curl https://pyenv.run | bash
+else
+	@printf "$(CYAN)>>> pyenv is already installed$(COFF)\n"
+endif
+
+
+## Install the necessary python version
+interpreter: install_pyenv
+	@printf "$(CYAN)>>> Installing required python version, if not available yet...$(COFF)\n"
+	@pyenv install -s $(PYTHON_VERSION)
+	@python -m pip3 install --user -U pip poetry
+	@pyenv local $(PYTHON_VERSION)
+	@printf "$(CYAN)>>> Done$(COFF)\n"
+
 
 ## Install project dependencies
-deps:
-	@printf "$(CYAN)Updating git submodules and python deps$(COFF)\n"
-	pip3 install -U poetry
+environment:
+	@printf "$(CYAN)Installing fresh python deps$(COFF)\n"
+ifneq ("$(wildcard ./poetry.lock)", "")
+	@rm poetry.lock
+endif
 	poetry install
 
 ## Run static code checkers and linters
 check:
 	@printf "$(CYAN)Running static code analysis, tests and license generation$(COFF)\n"
-	poetry run flake8
-	poetry run black --check algos
+	@export PYTHONPATH="./src:./tests"
+	poetry run isort --check --color src tests
+	poetry run black --check src tests
+	poetry run pylint src tests
 	poetry run mypy src --ignore-missing-imports
-	poetry run pip-licenses --with-authors -f markdown --output-file licenses.md
 
 ## Run unit tests
 test:
 	@printf "$(CYAN)Running test suite$(COFF)\n"
+	@export PYTHONPATH="./src:./tests"
 	poetry run pytest --cov=src
 
 ## Remove temporary files created during build and all compiled Python files
 clean:
 	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
+	@rm -rf build/
+	@rm -rf dist/
+	@rm -rf *.egg-info
+	@find . -type d -name '__pycache__' -exec rm -rf {} +
+	@find . -type f -name '*.py[co]' -exec rm -f {} +
+	@find . -name '*~' -exec rm -f {} +
+	@find . -type f -name '.DS_Store' -delete
+	@echo "$(GREEN)>>> Removed pycache, .pyc, .pyo, .DS_Store files and files with ~$(COFF)"
 
 ## Runs black formatter
 lint:
 	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
+	poetry run isort src tests
 	poetry run black src tests
+	poetry run pip-licenses --with-authors -f markdown --output-file licenses.md
+	@printf "$(GREEN)>>> Done$(COFF)\n"
 
 ## Connect to the dev db with a port FWD (Broadcasts on local 12.0.0.1:5432)
 bastion:

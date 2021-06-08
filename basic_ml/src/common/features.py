@@ -1,12 +1,6 @@
-from typing import List
+import os
 
 import pandas as pd
-
-
-def one_hot_encoding(feature_values: List) -> List[List[int]]:
-    # TODO
-    pass
-
 
 if __name__ == "__main__":
     cols_names = [
@@ -22,11 +16,10 @@ if __name__ == "__main__":
         "irradiat",
     ]
     # read the data
-    dataset_path = r"../../../data/raw/breast-cancer.data"
-    import os
+    DATASET_PATH = r"../../../data/raw/breast-cancer.data"
 
     print(os.getcwd())
-    df = pd.read_csv(dataset_path, header=None, names=cols_names).replace(
+    df = pd.read_csv(DATASET_PATH, header=None, names=cols_names).replace(
         {"?": "unknown"}
     )  # NaN are represented by '?'
 

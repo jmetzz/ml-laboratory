@@ -7,7 +7,7 @@
 
 from sklearn import svm
 
-from utils.dataset_loader import MNISTLoader
+from utils.datasets import MNISTLoader
 
 if __name__ == "__main__":
     training_data, validation_data, test_data = MNISTLoader.load_data("../../../../data/processed/MNIST/mnist.pkl.gz")

@@ -6,7 +6,7 @@ from scipy.spatial import distance
 from utils import datasets
 
 
-class HClustering:
+class HClustering:  # pylint: disable=too-few-public-methods
     def __init__(self, data, k):
         self.k = k
         self.data = data
@@ -26,9 +26,9 @@ class HClustering:
             new_cluster = self._create_cluster(elements)
             new_cluster_elements = new_cluster["elements"]
 
-            for e in elements:
-                old_clusters.append(e)
-                del current_clusters[str(e)]
+            for element in elements:
+                old_clusters.append(element)
+                del current_clusters[str(element)]
             self._add_heap_entry(heap, new_cluster, current_clusters)
             current_clusters[str(new_cluster_elements)] = new_cluster
         self.clusters = current_clusters
@@ -67,15 +67,15 @@ class HClustering:
         result = []
         # calculate the pairwise distance between points
         # only for the upper triangular matrix
-        for i in range(self.size - 1):
-            for j in range(i + 1, self.size):
-                dist = distance.euclidean(self.data[i], self.data[j], self.dimension)
-                ## duplicate dist, need to be remove, and there is no difference to use tuple only
-                ## leave second dist here is to take up a position for tie selection
-                ## result.append((dist, [dist, [[i], [j]]]))
+        for row in range(self.size - 1):
+            for col in range(row + 1, self.size):
+                dist = distance.euclidean(self.data[row], self.data[col], self.dimension)
+                # duplicate dist, need to be remove, and there is no difference to use tuple only
+                # leave second dist here is to take up a position for tie selection
+                # result.append((dist, [dist, [[i], [j]]]))
 
                 # saves the distance and the indexes of the instances
-                result.append(([dist, [[i], [j]]]))
+                result.append([dist, [[row], [col]]])
         return result
 
     def _compute_centroid_two_clusters(self, current_clusters, data_points_index):
@@ -97,14 +97,15 @@ class HClustering:
     def _mean(self, instances):
         num_cols = self.dimension
         num_instances = len(instances)
-        m = [0.0] * num_cols
+        mean_value = [0.0] * num_cols
         for col in range(num_cols):
             for point in instances:
-                m[col] += float(point[col])
-            m[col] = m[col] / num_instances
-        return m
+                mean_value[col] += float(point[col])
+            mean_value[col] = mean_value[col] / num_instances
+        return mean_value
 
-    def _valid_heap_node(self, heap_node, old_clusters):
+    @staticmethod
+    def _valid_heap_node(heap_node, old_clusters):
         pair_data = heap_node[1]
         for cluster in old_clusters:
             if cluster in pair_data:
@@ -118,33 +119,22 @@ class HClustering:
             heapq.heappush(heap, new_entry)
             # heapq.heappush(heap, (dist, new_entry))
 
-    def _create_heap_entry(self, existing_cluster, new_cluster, dist):
-        heap_entry = []
-        heap_entry.append(dist)
-        heap_entry.append([new_cluster["elements"], existing_cluster["elements"]])
+    @staticmethod
+    def _create_heap_entry(existing_cluster, new_cluster, dist):
+        heap_entry = [dist, [new_cluster["elements"], existing_cluster["elements"]]]
         return heap_entry
 
 
 def main(data, k):
-    hc = HClustering(data, k)
-    clusters = hc.clusterize()
+    hc_model = HClustering(data, k)
+    clusters = hc_model.clusterize()
     # cluster_labels = clusters.values()
-    for c in clusters.values():
-        pp.pprint(c)
+    for cluster in clusters.values():
+        pp.pprint(cluster)
 
     # gold_standard = {}  # initialize gold standard based on the class labels
     # precision, recall = eval.evaluate(clusters, gold_standard)
 
 
 if __name__ == "__main__":
-    """
-    Arguments:
-        filename: a text file name for the input data
-        k: a value k for the desired number of clusters.
-
-    Returns:
-        clusters: output k clusters, with each cluster contains a set of data points (index for input data)
-        precision
-        recall
-    """
-    main(datasets.toy_labelled_2d, 2)
+    main(datasets.TOY_2D, 2)

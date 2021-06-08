@@ -1,0 +1,33 @@
+[tool.isort]
+profile = "black"
+
+[tool.black]
+exclude = '(\.git|\.mypy_cache|\.venv)'
+include = '\.pyi?$'
+line-length = 120
+target-version = ['py38']
+
+[tool.pylint.master]
+extension-pkg-whitelist = ["pydantic"]
+fail-under = "9"
+ignore = []
+
+[tool.pylint.format]
+max-line-length = "120"
+
+[tool.pylint.messages_control]
+#disable = "bad-whitespace, trailing-whitespace,unsubscriptable-object"
+# pylint: disable=unsubscriptable-object is used here due to a bug
+# showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
+disable = [
+    "bad-whitespace",
+    "trailing-whitespace",
+    "missing-module-docstring",
+    "unsubscriptable-object"]
+
+[tool.pylint.miscellaneous]
+notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

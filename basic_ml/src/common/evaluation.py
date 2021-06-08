@@ -15,7 +15,7 @@ def recall(true_labels, predictions):
     raise NotImplementedError
 
 
-def f1(true_labels, predictions):
+def f1_score(true_labels, predictions):
     raise NotImplementedError
 
 

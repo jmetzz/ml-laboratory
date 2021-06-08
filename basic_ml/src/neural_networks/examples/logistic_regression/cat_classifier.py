@@ -1,17 +1,15 @@
-import h5py
-import matplotlib.pyplot as plt
-import scipy
-from scipy import ndimage
-
-import numpy as np
 from utils import data_helper
 
 if __name__ == "__main__":
 
     dataset_path = r"../data/raw/cat"
-    train_set_x_orig, train_set_y, test_set_x_orig, test_set_y, classes = data_helper.load_from_h5(
-        dataset_path, "catvnoncat"
-    )
+    (
+        train_set_x_orig,
+        train_set_y,
+        test_set_x_orig,
+        test_set_y,
+        classes,
+    ) = data_helper.load_from_h5(dataset_path, "catvnoncat")
 
     m_train = train_set_x_orig.shape[0]
     m_test = test_set_x_orig.shape[0]

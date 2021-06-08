@@ -1,9 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class BaseClustering:
-    __metaclass__ = ABCMeta
-
+class BaseClustering(metaclass=ABCMeta):
     def __init__(self, data):
         self.data = data
         self.size = len(data)
@@ -24,11 +22,11 @@ class BaseClustering:
         )
 
     @classmethod
-    def calculate_centroids(cls, data, k, clusters):
-        centroids = [0.0] * k
-        for c in range(k):
-            points = [data[j] for j in range(len(data)) if clusters[j] == c]
-            centroids[c] = BaseClustering.mean(points)
+    def calculate_centroids(cls, data, num_centroids, clusters):
+        centroids = [0.0] * num_centroids
+        for centroid in range(num_centroids):
+            points = [data[j] for j in range(len(data)) if clusters[j] == centroid]
+            centroids[centroid] = BaseClustering.mean(points)
         return centroids
 
     @classmethod
@@ -38,9 +36,9 @@ class BaseClustering:
         # [\mathbf{1}^T\mathbf{M}]_j= \sum_i \mathbf{1}_i \mathbf{M}_{i,j} =\sum_i \mathbf{M}_{i,j}.
         # Hence, the column-wise sum of \mathbf{M} is \mathbf{1}^T\mathbf{M}.
         ncols = len(points[0])
-        m = [0] * ncols
+        mean_value = [0] * ncols
         for col in range(ncols):
-            for p in points:
-                m[col] += p[col]
-            m[col] = m[col] / len(points)
-        return m
+            for point in points:
+                mean_value[col] += point[col]
+            mean_value[col] = mean_value[col] / len(points)
+        return mean_value

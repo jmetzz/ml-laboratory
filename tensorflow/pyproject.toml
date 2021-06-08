@@ -1,19 +1,18 @@
 [tool.poetry]
-name = "ml-lab"
+name = "ml-lab-tensorflow"
 version = "0.0.1"
 description = "Machine Learning lab code & examples"
 authors = ["Jean Metz"]
 
 [tool.poetry.dependencies]
 python = "3.8.2"
-jupyterlab = {version = "^3.0.16", optional = true}
-ipykernel = {version = "^5.5.5", optional = true}
-ipywidgets = {version = "^7.6.3", optional = true}
+jupyterlab = { version = "^3.0.16", optional = true }
+ipywidgets = { version = "^7.6.3", optional = true }
+ipykernel = { version = "^5.5.5", optional = true }
 tensorflow = "^2.5.0"
-keras = "^2.4.3"
 
 [tool.poetry.dev-dependencies]
-black = "^21.5b2"               # The uncompromising code formatter.
+black = "^21.5b2"
 flake9 = "^3.8.3"
 mypy = "^0.812"
 pytest = "^6.2.4"
@@ -28,24 +27,49 @@ flake8-typing-imports = "^1.10.1"
 responses = "^0.13.3"
 ipdb = "^0.13.9"
 pip-licenses = "^3.4.0"
-pre-commit = "^2.13.0"
+isort = "^5.8.0"
+pyupgrade = "^2.19.1"
+pydocstyle = "^6.1.1"
+pylint = "^2.8.3"
+colorama = "^0.4.4"
 
 
 [tool.poetry.extras]
 jupyter = ["ipykernel", "jupyterlab", "ipywidgets"]
 
+[tool.isort]
+profile = "black"
 
+[tool.black]
+line-length = 120
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '(\.git|\.mypy_cache|\.venv)'
 
+[tool.pylint.master]
+extension-pkg-whitelist = ["pydantic"]
+fail-under = "9"
+ignore = []
 
-[tool.flake8]
-max-line-length = 120
-max-complexity = 10
-ignore = ["W504", "W503", "E231", "E203"]
-exit-zero = 1
+[tool.pylint.format]
+max-line-length = "120"
+
+[tool.pylint.messages_control]
+disable = [
+    "bad-whitespace",
+    "trailing-whitespace",
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "unsubscriptable-object"]
+
+# pylint: disable=unsubscriptable-object is used here due to a bug
+# showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
+
+[tool.pylint.miscellaneous]
+notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
 
 [tool.pytest.ini_options]
 addopts = "--pdbcls=IPython.terminal.debugger:TerminalPdb --cov=src --cov-fail-under 80"
-
 
 [tool.coverage.report]
 omit = ["*/__init__.py", ".mypy_cache", ".reports", ".git"]
@@ -54,13 +78,6 @@ show_missing = true
 [tool.coverage.run]
 omit = ["*/__init__.py", ".mypy_cache", ".reports", ".git"]
 
-[tool.black]
-line-length = 120
-target-version = ['py38']
-include = '\.pyi?$'
-exclude = '(\.git|\.mypy_cache|\.venv)'
-
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-

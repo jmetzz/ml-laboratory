@@ -54,12 +54,11 @@ class KMeans(BaseClustering):
     def model(self):
         return self.centroids, self.clusters
 
-    def _find_clusters(self, data, centroids, function_dist=distance.euclidean):
+    def _find_clusters(self, data, centroids):
         """Distribute the instances in the clusters represented by the centroids
 
         :param data: the dataset of instances
         :param centroids: the centroid vectors with the same structure as the instances in the dataset
-        :param function_dist: the function used to calculate the distance between two instances
         :return: a list representing the cluster assignment for each instance in the dataset
         """
         clusters = [0] * self.size
@@ -75,38 +74,38 @@ class KMeans(BaseClustering):
 
     @staticmethod
     def _centroids_changed(prev_centroids, new_centroids):
-        for i in range(len(prev_centroids)):
-            for z1, z2 in zip(prev_centroids[i], new_centroids[i]):
-                if z1 != z2:
+        for idx, _ in enumerate(prev_centroids):
+            for centroid_1, centroid_2 in zip(prev_centroids[idx], new_centroids[idx]):
+                if centroid_1 != centroid_2:
                     return True
         return False
 
     @staticmethod
-    def _initial_centroids(k, data):
-        indexes = set(random.sample(range(0, len(data)), k))
+    def _initial_centroids(num_clusters, data):
+        indexes = set(random.sample(range(0, len(data)), num_clusters))
         return [data[i] for i in indexes]
 
-    def _update_model(self, new_centroinds, clusters):
-        self.centroids = new_centroinds
+    def _update_model(self, new_centroids, clusters):
+        self.centroids = new_centroids
         self.clusters = {c: [] for c in set(clusters)}
-        for e in range(len(self.data)):
-            self.clusters.get(clusters[e]).append(e)
+        for element in range(len(self.data)):
+            self.clusters.get(clusters[element]).append(element)
 
 
 def report(centroids, model):
     indexed_centroids = zip(range(len(centroids)), centroids)
-    for i, c in indexed_centroids:
-        print(f"C-{i}: {c}")
+    for idx, centroid in indexed_centroids:
+        print(f"C-{idx}: {centroid}")
 
     print("\nClusters: [ cluster-id | instances]")
-    for c, e in model.items():
-        print(f"C-{c}: {e}")
+    for centroid, element in model.items():
+        print(f"C-{centroid}: {element}")
 
 
 if __name__ == "__main__":
-    data = datasets.toy_unlabelled_2d
+    dataset = datasets.TOY_2D_UNLABELLED
 
-    kmeans = KMeans(data)
+    kmeans = KMeans(dataset)
     kmeans.build()
-    centroids, model = kmeans.model()
-    report(centroids, model)
+    clustering_centroids, model = kmeans.model()
+    report(clustering_centroids, model)

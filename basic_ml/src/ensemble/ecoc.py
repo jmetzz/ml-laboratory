@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     X, y = load_iris(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-    bagging = ECOC(5)
+    bagging = Ecoc(5)
     bagging.fit(X_train, y_train)
     prediction = bagging.predict(X_test)
 

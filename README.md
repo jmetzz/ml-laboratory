@@ -15,7 +15,7 @@ This is a mono-repository. Each sub-directory represents a specific project to t
 Preparing the environment
 -------------------------
 
-`poetry` is used to manage the dependencies. 
+`poetry` is used to manage the dependencies.
 
 To install `poetry` and the project dependencies, enter the sub-directory of interest and run
 
@@ -27,13 +27,11 @@ $ make deps
 Executing the code
 ------------------
 
- 
-Make sure you activate the correct environment before executing any script/notebook. 
+
+Make sure you activate the correct environment before executing any script/notebook.
 
 ```bash
 $ poetry shell
 ```
 
 Alternatively, run everything prefixing with `poetry run`.
-
-

@@ -21,13 +21,11 @@ class CART:
         if instance[node["index"]] < node["value"]:
             if isinstance(node["left"], dict):
                 return cls._predict(node["left"], instance)
-            else:
-                return node["left"]
-        else:
-            if isinstance(node["right"], dict):
-                return cls._predict(node["right"], instance)
-            else:
-                return node["right"]
+            return node["left"]
+
+        if isinstance(node["right"], dict):
+            return cls._predict(node["right"], instance)
+        return node["right"]
 
     def _select_split(self, instances, true_labels):
         """Select the best split according to Gini Index
@@ -52,18 +50,18 @@ class CART:
                 left_idx = np.where(left_filter)
                 right_idx = np.where(np.invert(left_filter))
 
-                X_left = instances[left_idx]
-                y_left = true_labels[left_idx].reshape((-1, 1))
+                left_features = instances[left_idx]
+                left_labels = true_labels[left_idx].reshape((-1, 1))
 
-                X_right = instances[right_idx]
-                y_right = true_labels[right_idx].reshape((-1, 1))
+                right_features = instances[right_idx]
+                right_labels = true_labels[right_idx].reshape((-1, 1))
 
-                gini = self.gini_index((y_left, y_right), len(X_left) + len(X_right))
+                gini = self.gini_index((left_labels, right_labels), len(left_features) + len(right_features))
 
                 if gini < best_score:
                     best_index, best_value = feature, instance[feature]
                     best_score = gini
-                    best_groups = ((X_left, y_left), (X_right, y_right))
+                    best_groups = ((left_features, left_labels), (right_features, right_labels))
 
         return {"index": best_index, "value": best_value, "groups": best_groups}
 
@@ -74,52 +72,53 @@ class CART:
 
         Args:
             node:
-            max_depth:
-            min_size:
             current_depth:
 
         Returns:
         """
-        (X_left, y_left), (X_right, y_right) = node["groups"]
+        (left_features, left_labels), (right_features, right_labels) = node["groups"]
         del node["groups"]
 
         # check for a no split
-        if not X_left.any() or not X_right.any():
-            node["left"] = node["right"] = self._to_terminal_node(np.vstack((y_left, y_right)))
+        if not left_features.any() or not right_features.any():
+            node["left"] = node["right"] = self._to_terminal_node(np.vstack((left_labels, right_labels)))
             return
 
         # check for max depth
         if current_depth >= self.max_depth:
-            node["left"], node["right"] = self._to_terminal_node(y_left), self._to_terminal_node(y_right)
+            node["left"], node["right"] = (
+                self._to_terminal_node(left_labels),
+                self._to_terminal_node(right_labels),
+            )
             return
 
         # process left child
-        if len(X_left) <= self.min_size:
-            node["left"] = self._to_terminal_node(y_left)
+        if len(left_features) <= self.min_size:
+            node["left"] = self._to_terminal_node(left_labels)
         else:
             # recursive step
-            node["left"] = self._select_split(X_left, y_left)
+            node["left"] = self._select_split(left_features, left_labels)
             self._split_node(node["left"], current_depth + 1)
 
         # process right child
-        if len(X_right) <= self.min_size:
-            node["right"] = self._to_terminal_node(y_right)
+        if len(right_features) <= self.min_size:
+            node["right"] = self._to_terminal_node(right_labels)
         else:
-            node["right"] = self._select_split(X_right, y_right)
+            node["right"] = self._select_split(right_features, right_labels)
             self._split_node(node["right"], current_depth + 1)
 
     @staticmethod
     def gini_index(groups, n_instances):
         gini_value = 0.0
-        for g in groups:
-            size = len(g)
+        for group in groups:
+            size = len(group)
             if size == 0:
                 continue
 
             # score the group based on the proportion of each class
             score = 0.0
-            labels, counts = np.unique(g, return_counts=True)
-            for label, count in zip(labels, counts):
+            labels, counts = np.unique(group, return_counts=True)
+            for _, count in zip(labels, counts):
                 proportion = count / size
                 score += proportion * proportion
             # weight the group score by its relative size
@@ -163,11 +162,11 @@ if __name__ == "__main__":
     predictions = model.predict(X_test)
     acc = accuracy(y_test, predictions)
     pp.pprint(model._model)
-    print("Accuracy is {0:.2f}".format(acc))
+    print(f"Accuracy is {acc:.2f}")
 
     model_stump = CART(max_depth=1, min_size=1)
     model_stump.fit(X_train, y_train)
     predictions = model_stump.predict(X_test)
     acc = accuracy(y_test, predictions)
     pp.pprint(model_stump._model)
-    print("Accuracy is {0:.2f}".format(acc))
+    print(f"Accuracy is {acc:.2f}")

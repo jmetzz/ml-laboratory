@@ -32,7 +32,7 @@ class PerceptronNeuron(Neuron):
     """
 
     def __init__(self):
-        super(PerceptronNeuron, self).__init__(step)
+        super().__init__(step)
 
 
 class SigmoidNeuron(Neuron):
@@ -43,4 +43,4 @@ class SigmoidNeuron(Neuron):
     """
 
     def __init__(self):
-        super(SigmoidNeuron, self).__init__(sigmoid)
+        super().__init__(sigmoid)

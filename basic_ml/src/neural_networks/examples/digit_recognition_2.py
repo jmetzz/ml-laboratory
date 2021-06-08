@@ -17,9 +17,9 @@ then y(x)=[0,0,0,0,0,0,1,0,0,0]^T is the desired output from the network.
 
 
 The loss function is the 'mean squared error' (or just MSE):
-\begin{eqnarray}  C(w,b) \equiv
-  \frac{1}{2n} \sum_x \| y(x) - a\|^2.
-\tag{6}\end{eqnarray}
+\begin{eqnarray}  C(w,b) \\equiv
+  \frac{1}{2n} \\sum_x \\| y(x) - a\\|^2.
+\tag{6}\\end{eqnarray}
 
 
 w  denotes the collection of all weights in the network, b all the biases,
@@ -43,7 +43,9 @@ if __name__ == "__main__":
     training_set, validation_set, test_set = MNISTLoader.load_data_wrapper("../data/processed/MNIST/mnist.pkl.gz")
 
     net = networks.ImprovedNetwork(
-        [784, 30, 10], cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ration
+        [784, 30, 10],
+        cost_function=CrossEntropyCost,
+        weight_initializer=sqrt_connections_ration,
     )
     evaluation = net.sdg(
         training_set,

@@ -38,26 +38,23 @@ def range_printable():
     return (ord(c) for c in string.printable)
 
 
-def H(data, iterator=range_bytes, convert=_identity, base=2):
+def entropy(data, iterator=range_bytes, convert=_identity, base=2):
     if not data:
         return 0
-    entropy = 0
-    for x in iterator():
-        p_x = float(data.count(convert(x))) / len(data)
+    entropy_value = 0
+    for element in iterator():
+        p_x = float(data.count(convert(element))) / len(data)
         if p_x > 0:
-            entropy += -p_x * log(p_x, base)
-    return entropy
+            entropy_value += -p_x * log(p_x, base)
+    return entropy_value
 
 
 def shannon_entropy(data):
-    return H(data, range_binary)
+    return entropy(data, range_binary)
 
 
 def _resolve_base(data):
-    base = len(set(data))
-    if base < 2:
-        base = 2
-    return base
+    return max(len(set(data)), 2)
 
 
 def column(matrix, i):
@@ -67,12 +64,21 @@ def column(matrix, i):
 def main():
     for row in fileinput.input():
         string_input = row.rstrip("\n")
-        print("%s: %f" % (string_input, H(string_input, range_printable)))
+        print(f"{string_input}: {entropy(string_input, range_printable):f}")
 
 
 if __name__ == "__main__":
-    for str in ["gargleblaster", "tripleee", "magnus", "lkjasdlk", "aaaaaaaa", "sadfasdfasdf", "7&wS/p(", "aabb"]:
-        print("%s: %f" % (str, H(str, range_printable, chr)))
+    for value in [
+        "gargleblaster",
+        "tripleee",
+        "magnus",
+        "lkjasdlk",
+        "aaaaaaaa",
+        "sadfasdfasdf",
+        "7&wS/p(",
+        "aabb",
+    ]:
+        print(f"{value}: {entropy(value, range_printable, chr):f}")
 
     # str_data = ''.join(str(e) for e in column(dh.toy_labeled_dataset, 2))
     # print("%s: %f" %("dataset", H(column(dh.toy_labeled_dataset, 2), range_binary)))

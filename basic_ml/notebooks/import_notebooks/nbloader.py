@@ -1,7 +1,10 @@
-import io, os, sys, types
+import os
+import sys
+import types
+
 from IPython import get_ipython
-from nbformat import read
 from IPython.core.interactiveshell import InteractiveShell
+from nbformat import read
 
 
 def find_notebook(fullname, path=None):
@@ -11,9 +14,9 @@ def find_notebook(fullname, path=None):
     and tries turning "Foo_Bar" into "Foo Bar" if Foo_Bar
     does not exist.
     """
-    name = fullname.rsplit('.', 1)[-1]
+    name = fullname.rsplit(".", 1)[-1]
     if not path:
-        path = ['']
+        path = [""]
     for d in path:
         nb_path = os.path.join(d, name + ".ipynb")
         if os.path.isfile(nb_path):
@@ -24,7 +27,7 @@ def find_notebook(fullname, path=None):
             return nb_path
 
 
-class NotebookLoader(object):
+class NotebookLoader:
     """Module Loader for Jupyter Notebooks"""
 
     def __init__(self, path=None):
@@ -38,7 +41,7 @@ class NotebookLoader(object):
         print("importing Jupyter notebook from %s" % path)
 
         # load the notebook object
-        with io.open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             nb = read(f, 4)
 
         # create the module and add it to sys.modules
@@ -47,7 +50,7 @@ class NotebookLoader(object):
         mod = types.ModuleType(fullname)
         mod.__file__ = path
         mod.__loader__ = self
-        mod.__dict__['get_ipython'] = get_ipython
+        mod.__dict__["get_ipython"] = get_ipython
         sys.modules[fullname] = mod
 
         # extra work to ensure that magics that would affect the user_ns
@@ -57,7 +60,7 @@ class NotebookLoader(object):
 
         try:
             for cell in nb.cells:
-                if cell.cell_type == 'code':
+                if cell.cell_type == "code":
                     # transform the input to executable Python
                     code = self.shell.input_transformer_manager.transform_cell(cell.source)
                     # run the code in themodule
@@ -67,7 +70,7 @@ class NotebookLoader(object):
         return mod
 
 
-class NotebookFinder(object):
+class NotebookFinder:
     """Module finder that locates Jupyter Notebooks"""
 
     def __init__(self):

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 
 
@@ -7,7 +5,7 @@ def step(z: float) -> float:
     return 1.0 if z >= 0.0 else 0.0
 
 
-def sigmoid(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def sigmoid(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Calculate the sigmoid activation function
 
     The sigmoid function take any range real number
@@ -33,7 +31,7 @@ def sigmoid(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return 1.0 / (1.0 + np.exp(-z)), z
 
 
-def tanh(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def tanh(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Calculate the tangent activation function
 
     Takes any range real number and returns the output value
@@ -60,7 +58,7 @@ def tanh(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return 2 * np.array(sigmoid(z)) - 1, z
 
 
-def hypertang(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def hypertang(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Calculate the hyper tangent activation function
 
     Takes any range real number and returns the output value
@@ -86,7 +84,7 @@ def hypertang(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return (exp - 1) / (exp + 1), z
 
 
-def softmax(z: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def softmax(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """ "Calculate the softmax activation function
 
     Takes any range real number and returns
