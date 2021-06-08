@@ -6,8 +6,8 @@ def L1(yhat, y):
 
     The L1 loss function is defined as:
         \begin{align*}
-            & L_1(\hat{y}, y) = \sum_{i=0}^m|y^{(i)} - \hat{y}^{(i)}|
-        \end{align*}
+            & L_1(\\hat{y}, y) = \\sum_{i=0}^m|y^{(i)} - \\hat{y}^{(i)}|
+        \\end{align*}
 
     :param yhat: vector of size m containing the predicted labels
     :param y: vector of size m containing the true labels
@@ -21,8 +21,8 @@ def L2(yhat, y):
 
     L2 loss is defined as
         \begin{align*}
-            & L_2(\hat{y},y) = \sum_{i=0}^m(y^{(i)} - \hat{y}^{(i)})^2
-        \end{align*}
+            & L_2(\\hat{y},y) = \\sum_{i=0}^m(y^{(i)} - \\hat{y}^{(i)})^2
+        \\end{align*}
 
     :param yhat: vector of size m containing the predicted labels
     :param y: vector of size m containing the true labels

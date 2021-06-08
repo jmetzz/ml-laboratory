@@ -1,17 +1,18 @@
 import json
 import random
-from typing import Any, Iterator, List, Sequence, Tuple
+from pathlib import Path
+from typing import Any, Iterator, Sequence
 
 import numpy as np
+
 from neural_networks.base.activations import relu, sigmoid
 from neural_networks.base.costs import CrossEntropyCost, QuadraticCost
-from neural_networks.base.initializers import (random_gaussian,
-                                               sqrt_connections_ratio)
+from neural_networks.base.initializers import random_gaussian, sqrt_connections_ratio
 from utils import data_helper
 
 
 class NetworkBase:
-    def __init__(self, sizes: List[int]):
+    def __init__(self, sizes: list[int]):
         """
         The biases and weights in the Network object are all
         initialized randomly, using the Numpy np.random.randn function
@@ -37,7 +38,7 @@ class NetworkBase:
     def load(self, filename):
         raise NotImplementedError("This method must be implemented in a specialization class")
 
-    def back_propagate(self, x: np.ndarray, y: float) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    def back_propagate(self, x: np.ndarray, y: float) -> tuple[list[np.ndarray], list[np.ndarray]]:
         """Pass x through the network and back to calculate the gradient.
 
         :param x: the test example to be classified
@@ -49,7 +50,7 @@ class NetworkBase:
         biases_by_layers = [np.zeros(b.shape) for b in self.biases]
         weights_by_layers = [np.zeros(w.shape) for w in self.weights]
 
-        ## 1- feedforward
+        # 1- feedforward
         # the input, x, is the activation of the first layer
         activation = x
         activations = [x]  # list to store all the activations, layer by layer
@@ -60,7 +61,7 @@ class NetworkBase:
             activation = sigmoid(z)
             activations.append(activation)
 
-        ## 2- backward pass
+        # 2- backward pass
         delta = self.calculate_delta(activations, z_vectors_by_layer, y)
         biases_by_layers[-1] = delta
         weights_by_layers[-1] = np.dot(delta, activations[-2].transpose())
@@ -99,7 +100,7 @@ class NetworkBase:
         the sigmoid function with respect to its input x.
 
         It is defined as:
-            sigmoid\_derivative(x) = \sigma'(x) = \sigma(x) (1 - \sigma(x))\tag{2}
+            sigmoid\\_derivative(x) = \\sigma'(x) = \\sigma(x) (1 - \\sigma(x))\tag{2}
 
         :param z: a scalar or numpy array
         :return the gradient value
@@ -115,13 +116,12 @@ class NetworkBase:
             "biases": [b.tolist() for b in self.biases],
             "cost": str(self.cost_name()),
         }
-        f = open(filename, "w")
-        json.dump(data, f)
-        f.close()
+        with Path(filename).open(mode="w") as file_handler:
+            json.dump(data, file_handler)
 
 
 class SimpleNetwork(NetworkBase):
-    def __init__(self, sizes: List[int]):
+    def __init__(self, sizes: list[int]):
         super().__init__(sizes)
         self.weights, self.biases = random_gaussian(sizes)
 
@@ -133,11 +133,11 @@ class SimpleNetwork(NetworkBase):
 
     def sdg(
         self,
-        training_data: Iterator[Tuple[np.ndarray, np.ndarray]],
+        training_data: Iterator[tuple[np.ndarray, np.ndarray]],
         epochs: int,
         eta: float = 0.01,
         batch_size: int = 100,
-        test_data: Iterator[Tuple[np.ndarray, Any]] = None,
+        test_data: Iterator[tuple[np.ndarray, Any]] = None,
         debug=False,
     ) -> None:
         """Train the neural network using mini-batch stochastic gradient descent.
@@ -161,12 +161,12 @@ class SimpleNetwork(NetworkBase):
         The update rule is:
 
         \begin{eqnarray}
-          w_k & \rightarrow & w_k' = w_k-\frac{\eta}{m}
-          \sum_j \frac{\partial C_{X_j}}{\partial w_k}\\
+          w_k & \rightarrow & w_k' = w_k-\frac{\\eta}{m}
+          \\sum_j \frac{\\partial C_{X_j}}{\\partial w_k}\\
 
-          b_l & \rightarrow & b_l' = b_l-\frac{\eta}{m}
-          \sum_j \frac{\partial C_{X_j}}{\partial b_l},
-        \end{eqnarray}
+          b_l & \rightarrow & b_l' = b_l-\frac{\\eta}{m}
+          \\sum_j \frac{\\partial C_{X_j}}{\\partial b_l},
+        \\end{eqnarray}
 
         where the sums are over all the training examples Xj in
         the current mini-batch.
@@ -192,7 +192,7 @@ class SimpleNetwork(NetworkBase):
             else:
                 print(f"Epoch {j} complete")
 
-    def update_batch(self, mini_batch: List[Tuple[np.ndarray, np.ndarray]], eta: float) -> None:
+    def update_batch(self, mini_batch: list[tuple[np.ndarray, np.ndarray]], eta: float) -> None:
         """Updates the network weights and biases according to
         a single iteration of gradient descent, using just the
         training data in mini_batch and back-propagation.
@@ -229,7 +229,12 @@ class SimpleNetwork(NetworkBase):
 
 
 class ImprovedNetwork(NetworkBase):
-    def __init__(self, layer_sizes, cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ratio):
+    def __init__(
+        self,
+        layer_sizes,
+        cost_function=CrossEntropyCost,
+        weight_initializer=sqrt_connections_ratio,
+    ):
         super().__init__(layer_sizes)
         self.num_classes = layer_sizes[-1]
         self.weights, self.biases = weight_initializer(layer_sizes)
@@ -241,7 +246,17 @@ class ImprovedNetwork(NetworkBase):
     def load(self, filename):
         raise NotImplementedError(f"TODO: implement load method in {self.__name__}")
 
-    def sdg(self, training_data, epochs, batch_size, eta, lmbda=0.0, validation_data=None, monitor=None, debug=False):
+    def sdg(
+        self,
+        training_data,
+        epochs,
+        batch_size,
+        eta,
+        lmbda=0.0,
+        validation_data=None,
+        monitor=None,
+        debug=False,
+    ):
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -297,7 +312,13 @@ class ImprovedNetwork(NetworkBase):
 
         return validation_costs, validation_acc, train_costs, train_acc
 
-    def update_batch(self, mini_batch: List[Tuple[np.ndarray, np.ndarray]], eta: float, lmbda: float, n: int) -> None:
+    def update_batch(
+        self,
+        mini_batch: list[tuple[np.ndarray, np.ndarray]],
+        eta: float,
+        lmbda: float,
+        n: int,
+    ) -> None:
         """Updates the network weights and biases according to
         a single iteration of gradient descent, using just the
         training data in mini_batch and back-propagation.
@@ -341,7 +362,8 @@ class ImprovedNetwork(NetworkBase):
 
         return train_acc, train_cost, valid_acc, valid_cost
 
-    def evaluate(self, test_data, measures=["acc"], lmbda=5.0):
+    def evaluate(self, test_data, measures: list = None, lmbda=5.0):
+        measures = measures or ["acc"]
         data = list(test_data)
         acc = cost = None
         prediction = [self.feed_forward(x) for x, y in data]
@@ -386,8 +408,8 @@ class ImprovedNetwork(NetworkBase):
         print("-------")
 
 
-class DidaticCourseraNetwork:
-    def forward(self, X, parameters):
+class DidacticCourseraNetwork:
+    def forward(self, features, parameters):
         """Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
 
         Arguments:
@@ -400,119 +422,69 @@ class DidaticCourseraNetwork:
                     every cache of linear_activation_forward() (there are L-1 of them, indexed from 0 to L-1)
         """
         caches = []
-        A = X
-        L = len(parameters) // 2  # number of layers in the neural network
+        activations = features
+        num_layers = len(parameters) // 2  # number of layers in the neural network
 
         # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
-        for l in range(1, L):
-            A_prev = A
-            A, cache = self.linear_activation_forward(A_prev, parameters[f"W{l}"], parameters[f"b{l}"], activation=relu)
+        for layer in range(1, num_layers):
+            previous_activations = activations
+            activations, cache = self.linear_activation_forward(
+                previous_activations, parameters[f"W{layer}"], parameters[f"b{layer}"], activation_func=relu
+            )
             caches.append(cache)
 
         # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
-        AL, cache = self.linear_activation_forward(A, parameters[f"W{L}"], parameters[f"b{L}"], activation=sigmoid)
+        linear_activation_values, cache = self.linear_activation_forward(
+            activations, parameters[f"W{num_layers}"], parameters[f"b{num_layers}"], activation_func=sigmoid
+        )
         caches.append(cache)
-        assert AL.shape == (1, X.shape[1])
-        return AL, caches
+        if linear_activation_values.shape != (1, features.shape[1]):
+            raise Exception("Shape mismatch when processing forward step.")
+        return linear_activation_values, caches
 
-    def linear_activation_forward(self, A_prev, W, b, activation=relu):
-        """Implement the forward propagation for the LINEAR->ACTIVATION layer
+    def linear_activation_forward(self, previous_activation_values, weights, biases, activation_func=relu):
+        """
+        Implement the forward propagation for the LINEAR->ACTIVATION layer
 
-        Arguments:
-            A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
-            W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-            b -- bias vector, numpy array of shape (size of the current layer, 1)
-            activation -- the activation to be used in this layer
+        Args:
+            previous_activation_values: activations from previous layer (or input data)
+                (size of previous layer, number of examples)
+            weights: a numpy array of shape (size of current layer, size of previous layer)
+            biases: numpy array of shape (size of the current layer, 1)
+            activation_func -- the activation to be used in this layer
 
         Returns:
-            A -- the output of the activation function, also called the post-activation value
-            cache -- a python tuple containing "linear_cache" and "activation_cache";
+            activation_values: the output of the activation function, also called the post-activation value
+            cache: a python tuple containing "linear_cache" and "activation_cache";
                 stored for computing the backward pass efficiently
         """
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
-        Z, linear_cache = self.linear_forward(A_prev, W, b)
-        A, activation_cache = activation(Z)
+        pre_activations, linear_cache = self.linear_forward(previous_activation_values, weights, biases)
+        activation_values, activation_cache = activation_func(pre_activations)
 
-        assert A.shape == (W.shape[0], A_prev.shape[1])
+        if activation_values.shape != (weights.shape[0], previous_activation_values.shape[1]):
+            raise Exception("Shape mismatch when processing linear activation forward function.")
+
         cache = (linear_cache, activation_cache)
-        return A, cache
+        return activation_values, cache
 
-    def linear_forward(self, A, W, b):
+    def linear_forward(self, activations, weight_matrix, bias_vector):
         """
         Implement the linear part of a layer's forward propagation.
 
-        Arguments:
-        A -- activations from previous layer (or input data): (size of previous layer, number of examples)
-        W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-        b -- bias vector, numpy array of shape (size of the current layer, 1)
+        Args:
+            activations: activations from previous layer (or input data): (size of previous layer, number of examples)
+            weight_matrix: numpy array of shape (size of current layer, size of previous layer)
+            bias_vector: numpy array of shape (size of the current layer, 1)
 
         Returns:
-        Z -- the input of the activation function, also called pre-activation parameter
-        cache -- a python tuple containing "A", "W" and "b" ; stored for computing the backward pass efficiently
+            tuple with the pre-activation parameter values (Z) and cache,
+            a python tuple containing "activations", "weights" and "biases";
+            stored for computing the backward pass efficiently
         """
-        Z = np.dot(W, A) + b
-        assert Z.shape == (W.shape[0], A.shape[1])
-        cache = (A, W, b)
-        return Z, cache
+        pre_activations = np.dot(weight_matrix, activations) + bias_vector
 
+        if pre_activations.shape != (weight_matrix.shape[0], activations.shape[1]):
+            raise Exception("Shape mismatch when processing linear forward function.")
 
-def linear_forward_test_case():
-    np.random.seed(1)
-    """
-    X = np.array([[-1.02387576, 1.12397796],
- [-1.62328545, 0.64667545],
- [-1.74314104, -0.59664964]])
-    W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
-    b = np.array([[1]])
-    """
-    A = np.random.randn(3, 2)
-    W = np.random.randn(1, 3)
-    b = np.random.randn(1, 1)
-    return A, W, b
-
-
-def linear_activation_forward_test_case():
-    """
-       X = np.array([[-1.02387576, 1.12397796],
-    [-1.62328545, 0.64667545],
-    [-1.74314104, -0.59664964]])
-       W = np.array([[ 0.74505627, 1.97611078, -1.24412333]])
-       b = 5
-    """
-    np.random.seed(2)
-    A_prev = np.random.randn(3, 2)
-    W = np.random.randn(1, 3)
-    b = np.random.randn(1, 1)
-    return A_prev, W, b
-
-
-def L_model_forward_test_case():
-    """
-       X = np.array([[-1.02387576, 1.12397796],
-    [-1.62328545, 0.64667545],
-    [-1.74314104, -0.59664964]])
-       parameters = {'W1': np.array([[ 1.62434536, -0.61175641, -0.52817175],
-           [-1.07296862,  0.86540763, -2.3015387 ]]),
-    'W2': np.array([[ 1.74481176, -0.7612069 ]]),
-    'b1': np.array([[ 0.],
-           [ 0.]]),
-    'b2': np.array([[ 0.]])}
-    """
-    np.random.seed(1)
-    X = np.random.randn(4, 2)
-    W1 = np.random.randn(3, 4)
-    b1 = np.random.randn(3, 1)
-    W2 = np.random.randn(1, 3)
-    b2 = np.random.randn(1, 1)
-    parameters = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
-
-    return X, parameters
-
-
-if __name__ == "__main__":
-    A, W, b = linear_forward_test_case()
-
-    print("test case created")
-    net = DidaticCourseraNetwork()
-    Z, linear_cache = net.linear_forward(A, W, b)
-    print("Z = " + str(Z))
+        return pre_activations, (activations, weight_matrix, bias_vector)

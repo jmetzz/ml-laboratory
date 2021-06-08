@@ -1,10 +1,11 @@
 import random
 
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import shuffle
-
-import numpy as np
 
 
 class BoostClassifier:
@@ -26,29 +27,34 @@ class BoostClassifier:
         self._model = dict()
         self._classifiers_trained = 0
         self.classifiers = [learner1, learner2, learner3]
-        for l in self.classifiers:
-            assert l is not None
+        for classifier in self.classifiers:
+            if classifier is None:
+                raise ValueError("Classifier is None")
 
     def fit(self, instances, true_labels):
-        (X1, y1), (X2, y2), (X3, y3) = self._random_split(instances, true_labels)
+        (features_1, labels_1), (features_2, labels_2), (features_3, labels_3) = self._random_split(
+            instances, true_labels
+        )
 
         # Train the 1st classifier
-        self.classifiers[0].fit(X1, y1)
+        self.classifiers[0].fit(features_1, labels_1)
         self._classifiers_trained = 1
 
         # Train the 2nd classifier
-        prediction_h1 = self.classifiers[0].predict(X1)
-        prediction_h2 = self.classifiers[0].predict(X2)
-        X2, y2 = self.prepare_input_h2(X1, y1, X2, y2, prediction_h1, prediction_h2)
-        self.classifiers[1].fit(X2, y2)
+        prediction_h1 = self.classifiers[0].predict(features_1)
+        prediction_h2 = self.classifiers[0].predict(features_2)
+        features_2, labels_2 = self.prepare_input_h2(
+            features_1, labels_1, features_2, labels_2, prediction_h1, prediction_h2
+        )
+        self.classifiers[1].fit(features_2, labels_2)
         self._classifiers_trained = 2
 
         # Train the 3rd classifier
-        prediction_h1 = self.classifiers[0].predict(X3)
-        prediction_h2 = self.classifiers[1].predict(X3)
-        X3, y3 = self.prepare_input_h3(X3, y3, prediction_h1, prediction_h2)
-        if X3.size != 0:
-            self.classifiers[2].fit(X3, y3)
+        prediction_h1 = self.classifiers[0].predict(features_3)
+        prediction_h2 = self.classifiers[1].predict(features_3)
+        features_3, labels_3 = self.prepare_input_h3(features_3, labels_3, prediction_h1, prediction_h2)
+        if features_3.size != 0:
+            self.classifiers[2].fit(features_3, labels_3)
             self._classifiers_trained = 3
 
     def predict(self, instances):
@@ -65,39 +71,47 @@ class BoostClassifier:
         return prediction_h1
 
     @staticmethod
-    def prepare_input_h2(X1, y1, X2, y2, prediction_h1, prediction_h2):
-        wrongly_classified = prediction_h1 != y1
-        correctly_classified = prediction_h2 == y2
+    def prepare_input_h2(features_1, labels_1, features_2, labels_2, prediction_h1, prediction_h2):
+        wrongly_classified = prediction_h1 != labels_1
+        correctly_classified = prediction_h2 == labels_2
         if np.any(wrongly_classified) and np.any(correctly_classified):
-            X = np.vstack((X1[wrongly_classified], X2[correctly_classified]))
-            y = np.vstack((y1[wrongly_classified].reshape(-1, 1), y2[correctly_classified].reshape(-1, 1)))
-            return X, y
-        elif np.any(wrongly_classified):
-            return X1[wrongly_classified], y1[wrongly_classified]
-        elif np.any(correctly_classified):
-            return X2[correctly_classified], y2[correctly_classified]
+            features = np.vstack((features_1[wrongly_classified], features_2[correctly_classified]))
+            labels = np.vstack(
+                (
+                    labels_1[wrongly_classified].reshape(-1, 1),
+                    labels_2[correctly_classified].reshape(-1, 1),
+                )
+            )
+            return features, labels
+        if np.any(wrongly_classified):
+            return features_1[wrongly_classified], labels_1[wrongly_classified]
+
+        return features_2[correctly_classified], labels_2[correctly_classified]
 
     @staticmethod
-    def prepare_input_h3(X3, y3, prediction_h1, prediction_h2):
+    def prepare_input_h3(features, labels, prediction_h1, prediction_h2):
         disagree = prediction_h1 != prediction_h2
-        return X3[disagree], y3[disagree]
+        return features[disagree], labels[disagree]
 
     @staticmethod
     def _random_split(instances, true_labels):
-        X, y = shuffle(
+        features, labels = shuffle(
             instances,
             true_labels,
         )
         split = len(instances) // 3
-        return (X[:split], y[:split]), (X[split : split * 2], y[split : split * 2]), (X[split * 2 :], y[split * 2 :])
+        return (
+            (features[:split], labels[:split]),
+            (features[split : split * 2], labels[split : split * 2]),
+            (features[split * 2 :], labels[split * 2 :]),
+        )
 
 
 if __name__ == "__main__":
-    from sklearn.datasets import load_iris
-    from sklearn.model_selection import train_test_split
-
-    X, y = load_iris(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    full_features_set, full_labels_set = load_iris(return_X_y=True)
+    x_train, x_test, y_train, y_test = train_test_split(
+        full_features_set, full_labels_set, test_size=0.33, random_state=42
+    )
 
     boosting = BoostClassifier(
         KNeighborsClassifier(n_neighbors=3),
@@ -105,8 +119,8 @@ if __name__ == "__main__":
         DecisionTreeClassifier(criterion="gini", random_state=71),
     )
 
-    boosting.fit(X_train, y_train)
-    prediction = boosting.predict(X_test)
+    boosting.fit(x_train, y_train)
+    prediction = boosting.predict(x_test)
 
     acc = sum(int(x == y) for (x, y) in zip(prediction, y_test)) / len(y_test)
     print(f"Acc = {acc:.2f}")

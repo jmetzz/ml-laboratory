@@ -8451,15 +8451,15 @@ label {
 }
 /* Flexible box model classes */
 /* Taken from Alex Russell http://infrequently.org/2009/08/css-3-progress/ */
-/* This file is a compatability layer.  It allows the usage of flexible box 
+/* This file is a compatability layer.  It allows the usage of flexible box
 model layouts accross multiple browsers, including older browsers.  The newest,
 universal implementation of the flexible box model is used when available (see
-`Modern browsers` comments below).  Browsers that are known to implement this 
+`Modern browsers` comments below).  Browsers that are known to implement this
 new spec completely include:
 
     Firefox 28.0+
     Chrome 29.0+
-    Internet Explorer 11+ 
+    Internet Explorer 11+
     Opera 17.0+
 
 Browsers not listed, including Safari, are supported via the styling under the
@@ -11233,7 +11233,7 @@ div#pager .ui-resizable-handle {
   background: #f7f7f7;
   border-top: 1px solid #cfcfcf;
   border-bottom: 1px solid #cfcfcf;
-  /* This injects handle bars (a short, wide = symbol) for 
+  /* This injects handle bars (a short, wide = symbol) for
         the resize handle. */
 }
 div#pager .ui-resizable-handle::after {
@@ -11676,7 +11676,7 @@ ul.typeahead-list > li > a {
 .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
 <style type="text/css">
-    
+
 /* Temporary definitions which will become obsolete with Notebook release 5.0 */
 .ansi-black-fg { color: #3E424D; }
 .ansi-black-bg { background-color: #3E424D; }
@@ -11730,14 +11730,14 @@ div#notebook {
   div.cell {
     display: block;
     page-break-inside: avoid;
-  } 
-  div.output_wrapper { 
-    display: block;
-    page-break-inside: avoid; 
   }
-  div.output { 
+  div.output_wrapper {
     display: block;
-    page-break-inside: avoid; 
+    page-break-inside: avoid;
+  }
+  div.output {
+    display: block;
+    page-break-inside: avoid;
   }
 }
 </style>
@@ -11848,8 +11848,8 @@ div#notebook {
 <span class="c1"># and saves the results to the `preview/` directory</span>
 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">datagen</span><span class="o">.</span><span class="n">flow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                          <span class="n">save_to_dir</span><span class="o">=</span><span class="s1">&#39;resources/gen-data&#39;</span><span class="p">,</span> 
-                          <span class="n">save_prefix</span><span class="o">=</span><span class="s1">&#39;cheesecake&#39;</span><span class="p">,</span> 
+                          <span class="n">save_to_dir</span><span class="o">=</span><span class="s1">&#39;resources/gen-data&#39;</span><span class="p">,</span>
+                          <span class="n">save_prefix</span><span class="o">=</span><span class="s1">&#39;cheesecake&#39;</span><span class="p">,</span>
                           <span class="n">save_format</span><span class="o">=</span><span class="s1">&#39;jpeg&#39;</span><span class="p">):</span>
     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
@@ -11897,7 +11897,7 @@ div#notebook {
         <span class="n">color_mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="n">class_mode</span><span class="o">=</span><span class="s1">&#39;categorical&#39;</span><span class="p">,</span> <span class="c1"># because categorical_crossentropy loss</span>
-        <span class="n">seed</span><span class="o">=</span><span class="n">r_seed</span><span class="p">)</span>  
+        <span class="n">seed</span><span class="o">=</span><span class="n">r_seed</span><span class="p">)</span>
 
 <span class="n">val_datagen</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">(</span><span class="n">rescale</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span>
 <span class="n">validation_generator</span> <span class="o">=</span> <span class="n">val_datagen</span><span class="o">.</span><span class="n">flow_from_directory</span><span class="p">(</span>
@@ -11915,7 +11915,7 @@ div#notebook {
         <span class="n">color_mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
         <span class="n">class_mode</span><span class="o">=</span><span class="s1">&#39;categorical&#39;</span><span class="p">,</span>
-        <span class="n">seed</span><span class="o">=</span><span class="n">r_seed</span><span class="p">,</span> 
+        <span class="n">seed</span><span class="o">=</span><span class="n">r_seed</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
@@ -11984,7 +11984,7 @@ test examples: 3000
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot_every_n_epochs</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">plot_fraction</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_frequency</span> <span class="o">=</span> <span class="n">plot_every_n_epochs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_fraction</span> <span class="o">=</span> <span class="n">plot_fraction</span> <span class="c1">#Plot only the most recent values</span>
-        
+
     <span class="k">def</span> <span class="nf">on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_losses</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_acc</span> <span class="o">=</span> <span class="p">[]</span>
@@ -11994,12 +11994,12 @@ test examples: 3000
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acc&#39;</span><span class="p">))</span>
-            
+
         <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_frequency</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># You can chose the style of your preference</span>
             <span class="c1"># print(plt.style.available) to see the available options</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;seaborn&quot;</span><span class="p">)</span>
-            
+
             <span class="n">nr_values_to_plot</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_fraction</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_losses</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">nr_values_to_plot</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nr_values_to_plot</span><span class="p">))</span>
@@ -12016,7 +12016,7 @@ test examples: 3000
         <span class="bp">self</span><span class="o">.</span><span class="n">train_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acc&#39;</span><span class="p">))</span>
 
-        
+
 <span class="k">def</span> <span class="nf">plot_history</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">metric</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">f</span><span class="s2">&quot;val_</span><span class="si">{metric}</span><span class="s2">&quot;</span><span class="p">])</span>
@@ -12025,7 +12025,7 @@ test examples: 3000
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;validation&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    
+
 
 <span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span>
                           <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -12069,8 +12069,8 @@ test examples: 3000
     <span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                           <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Normalized confusion matrix&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    
-    
+
+
 <span class="k">def</span> <span class="nf">visualize_model_predictions</span><span class="p">(</span><span class="n">test_set</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">title_string</span><span class="p">):</span>
     <span class="c1"># Plot a random sample of 10 test images, their predicted labels and ground truth</span>
     <span class="n">figure</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">))</span>
@@ -12082,7 +12082,7 @@ test examples: 3000
         <span class="n">predict_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y_hat</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
         <span class="n">true_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
         <span class="c1"># Set the title for each image</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">classes</span><span class="p">[</span><span class="n">predict_index</span><span class="p">],</span> 
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">classes</span><span class="p">[</span><span class="n">predict_index</span><span class="p">],</span>
                                       <span class="n">classes</span><span class="p">[</span><span class="n">true_index</span><span class="p">]),</span>
                                       <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;green&quot;</span> <span class="k">if</span> <span class="n">predict_index</span> <span class="o">==</span> <span class="n">true_index</span> <span class="k">else</span> <span class="s2">&quot;red&quot;</span><span class="p">),</span>
                                       <span class="n">fontsize</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
@@ -12122,8 +12122,8 @@ test examples: 3000
 <span class="k">if</span> <span class="n">model_to_use</span> <span class="o">==</span> <span class="s1">&#39;inception&#39;</span><span class="p">:</span>
     <span class="c1"># Model definition</span>
     <span class="n">base_model</span> <span class="o">=</span> <span class="n">InceptionV3</span><span class="p">(</span>
-        <span class="n">include_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-        <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span> 
+        <span class="n">include_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span>
         <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span> <span class="c1">#input_tensor=None</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">base_model</span><span class="o">.</span><span class="n">output</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">GlobalAveragePooling2D</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># or: pooling=&#39;avg&#39;</span>
@@ -12131,15 +12131,15 @@ test examples: 3000
     <span class="n">predictions</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">base_model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
-   
+
     <span class="c1"># first: freeze all convolutional InceptionV3 layers</span>
     <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">base_model</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
         <span class="n">layer</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="kc">False</span>
-        
+
 <span class="k">elif</span> <span class="n">model_to_use</span> <span class="o">==</span> <span class="s1">&#39;custom-inception&#39;</span><span class="p">:</span>
     <span class="n">base_model</span> <span class="o">=</span> <span class="n">InceptionV3</span><span class="p">(</span>
-        <span class="n">include_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-        <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span> 
+        <span class="n">include_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span>
         <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span> <span class="c1">#input_tensor=None</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">base_model</span><span class="o">.</span><span class="n">output</span>
@@ -12207,43 +12207,43 @@ test examples: 3000
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
+Layer (type)                 Output Shape              Param #
 =================================================================
-conv2d_37 (Conv2D)           (None, 150, 150, 32)      896       
+conv2d_37 (Conv2D)           (None, 150, 150, 32)      896
 _________________________________________________________________
-activation_55 (Activation)   (None, 150, 150, 32)      0         
+activation_55 (Activation)   (None, 150, 150, 32)      0
 _________________________________________________________________
-max_pooling2d_37 (MaxPooling (None, 75, 75, 32)        0         
+max_pooling2d_37 (MaxPooling (None, 75, 75, 32)        0
 _________________________________________________________________
-conv2d_38 (Conv2D)           (None, 73, 73, 64)        18496     
+conv2d_38 (Conv2D)           (None, 73, 73, 64)        18496
 _________________________________________________________________
-activation_56 (Activation)   (None, 73, 73, 64)        0         
+activation_56 (Activation)   (None, 73, 73, 64)        0
 _________________________________________________________________
-max_pooling2d_38 (MaxPooling (None, 36, 36, 64)        0         
+max_pooling2d_38 (MaxPooling (None, 36, 36, 64)        0
 _________________________________________________________________
-conv2d_39 (Conv2D)           (None, 34, 34, 32)        18464     
+conv2d_39 (Conv2D)           (None, 34, 34, 32)        18464
 _________________________________________________________________
-activation_57 (Activation)   (None, 34, 34, 32)        0         
+activation_57 (Activation)   (None, 34, 34, 32)        0
 _________________________________________________________________
-max_pooling2d_39 (MaxPooling (None, 17, 17, 32)        0         
+max_pooling2d_39 (MaxPooling (None, 17, 17, 32)        0
 _________________________________________________________________
-conv2d_40 (Conv2D)           (None, 15, 15, 64)        18496     
+conv2d_40 (Conv2D)           (None, 15, 15, 64)        18496
 _________________________________________________________________
-activation_58 (Activation)   (None, 15, 15, 64)        0         
+activation_58 (Activation)   (None, 15, 15, 64)        0
 _________________________________________________________________
-max_pooling2d_40 (MaxPooling (None, 7, 7, 64)          0         
+max_pooling2d_40 (MaxPooling (None, 7, 7, 64)          0
 _________________________________________________________________
-flatten_10 (Flatten)         (None, 3136)              0         
+flatten_10 (Flatten)         (None, 3136)              0
 _________________________________________________________________
-dense_19 (Dense)             (None, 64)                200768    
+dense_19 (Dense)             (None, 64)                200768
 _________________________________________________________________
-activation_59 (Activation)   (None, 64)                0         
+activation_59 (Activation)   (None, 64)                0
 _________________________________________________________________
-dropout_10 (Dropout)         (None, 64)                0         
+dropout_10 (Dropout)         (None, 64)                0
 _________________________________________________________________
-dense_20 (Dense)             (None, 12)                780       
+dense_20 (Dense)             (None, 12)                780
 _________________________________________________________________
-activation_60 (Activation)   (None, 12)                0         
+activation_60 (Activation)   (None, 12)                0
 =================================================================
 Total params: 257,900
 Trainable params: 257,900
@@ -12663,7 +12663,7 @@ Loss: 1.510448259784576 ; Acc: 0.4893048128342246
 <span class="c1"># check the differences on the output. You&#39;ll notice the predicted labels</span>
 <span class="c1"># vary at each execution.</span>
 
-<span class="n">test_generator</span><span class="o">.</span><span class="n">reset</span> 
+<span class="n">test_generator</span><span class="o">.</span><span class="n">reset</span>
 <span class="n">y_hat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_generator</span><span class="p">(</span><span class="n">test_generator</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">test_generator</span><span class="p">),</span> <span class="n">workers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">y_hat_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 
@@ -12916,7 +12916,7 @@ breakfast_burrito       0.26      0.13      0.18       250
 <div class="prompt input_prompt">In&nbsp;[260]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_generator</span><span class="o">.</span><span class="n">reset</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_generator</span><span class="o">.</span><span class="n">reset</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">test_generator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 <span class="n">y_hat</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="c1">#.argmax(axis=-1)</span>
 <span class="n">visualize_model_predictions</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">dataset_labels</span><span class="p">,</span> <span class="s1">&#39;Test&#39;</span><span class="p">)</span>
@@ -12953,7 +12953,7 @@ breakfast_burrito       0.26      0.13      0.18       250
   </div>
 </body>
 
- 
+
 
 
 </html>

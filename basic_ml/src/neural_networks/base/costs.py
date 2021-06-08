@@ -42,7 +42,7 @@ class QuadraticCost:
 
     @staticmethod
     def derivative(output_activations, y):
-        """Return the vector of partial derivatives
+        r"""Return the vector of partial derivatives
 
         \partial C_x / \partial a for the output activations."""
         return output_activations - y

@@ -1,14 +1,14 @@
-import pickle
 import time
 
+import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-import numpy as np
 from neural_networks.base import networks
 from neural_networks.base.costs import CrossEntropyCost
-from neural_networks.base.initializers import sqrt_connections_ration
+from neural_networks.base.initializers import sqrt_connections_ratio
 from utils.data_helper import as_vector
+from utils.model_helper import save_pickle_model
 
 
 def prepare_training_data(df, num_features, class_feature, num_classes):
@@ -33,17 +33,6 @@ def prepare_test_data(df, num_features, class_feature):
     return zip(inputs, labels)
 
 
-def load_model(filename):
-    with open(filename, "rb") as filehandler:
-        model = pickle.load(filehandler)
-    return model
-
-
-def save_model(filename, model):
-    with open(filename, "wb") as filehandler:
-        pickle.dump(model, filehandler, protocol=pickle.HIGHEST_PROTOCOL)
-
-
 if __name__ == "__main__":
     path_to_data = "../data/raw/user_actions"
     # Training data:
@@ -58,11 +47,19 @@ if __name__ == "__main__":
     test_set = prepare_test_data(df_test, 14, "action")
 
     net = networks.ImprovedNetwork(
-        [14, 30, 5], cost_function=CrossEntropyCost, weight_initializer=sqrt_connections_ration
+        [14, 30, 5],
+        cost_function=CrossEntropyCost,
+        weight_initializer=sqrt_connections_ratio,
     )
 
     evaluation = net.sdg(
-        training_set, epochs=10, eta=0.75, batch_size=100, lmbda=0.5, monitor=["train_acc"], debug=True
+        training_set,
+        epochs=10,
+        eta=0.75,
+        batch_size=100,
+        lmbda=0.5,
+        monitor=["train_acc"],
+        debug=True,
     )
 
     acc, cost = net.evaluate(test_set, ["acc", "cost"])
@@ -72,4 +69,4 @@ if __name__ == "__main__":
     print(f"\tCost: {cost}")
     ts = time.time()
     net.export(f"../models/model_30e_10_0.75_100_0.5-{ts}.json")
-    save_model(f"../models/model_30e_10_0.75_100_0.5-{ts}.pickle", net)
+    save_pickle_model(f"../models/model_30e_10_0.75_100_0.5-{ts}.pickle", net)
