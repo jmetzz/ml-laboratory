@@ -2,8 +2,7 @@ import argparse
 from pathlib import Path
 from shutil import copyfile
 
-from utils.data_helper import split_set
-from utils.data_loader import load_json_file
+from utils.data_helper import load_json_file, split_set
 
 
 def create_argument_parser():

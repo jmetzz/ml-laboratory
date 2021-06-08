@@ -1621,7 +1621,7 @@ jupyter = ["ipykernel", "jupyterlab", "ipywidgets"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.9.2"
-content-hash = "a1bc085ea0f5de5c2f3360aa0e7b2607d0887c2b3383cd06570ec8b9d09f84ac"
+content-hash = "c109996ea055e24763c8687a0c382b86260ababbea3b0477e3f7fc8f1ca1d72e"
 
 [metadata.files]
 anyio = [
