@@ -1,4 +1,4 @@
-from neural_networks.architectures.SingleLayer import SingleLayer
+from neural_networks.architectures.single_layer import SingleLayer
 from neural_networks.base.activations import sigmoid
 from neural_networks.base.neurons import PerceptronNeuron
 

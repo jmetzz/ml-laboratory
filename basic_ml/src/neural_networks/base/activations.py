@@ -23,10 +23,10 @@ def sigmoid(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         cache -- returns Z as well, useful during backpropagation
 
     Examples:
-        >>> input = np.arange(-10, 10, 1)
-        >>> sigmoid(input)
+        >>> data = np.arange(-10, 10, 1)
+        >>> sigmoid(data)
 
-        >>> [sigmoid(x) for x in input]
+        >>> [sigmoid(x) for x in data]
     """
     return 1.0 / (1.0 + np.exp(-z)), z
 
@@ -48,10 +48,10 @@ def tanh(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         cache -- returns Z as well, useful during backpropagation
 
     Examples:
-        >>> input = np.arange(-10, 10, 1)
-        >>> tanh(input)
+        >>> data = np.arange(-10, 10, 1)
+        >>> tanh(data)
 
-        >>> [tanh(x) for x in input]
+        >>> [tanh(x) for x in data]
 
     """
     # tanh(z) = 2σ(2z) − 1
@@ -74,10 +74,10 @@ def hypertang(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         h -- a numpy matrix equal to the hyperbolic tangent of x, of shape (n,m)
         cache -- returns Z as well, useful during backpropagation
     Examples:
-        >>> input = np.arange(-10, 10, 1)
-        >>> hypertang(input)
+        >>> data = np.arange(-10, 10, 1)
+        >>> hypertang(data)
 
-        >>> [hypertang(x) for x in input]
+        >>> [hypertang(x) for x in data]
 
     """
     exp = np.exp(2 * z)
@@ -102,10 +102,10 @@ def softmax(z: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         cache -- returns Z as well, useful during backpropagation
 
     Examples:
-        >>> input = np.arange(-10, 10, 1)
-        >>> softmax(input)
+        >>> data = np.arange(-10, 10, 1)
+        >>> softmax(data)
 
-        >>> [softmax(x) for x in input]
+        >>> [softmax(x) for x in data]
     """
     z_exp = np.exp(z)
     z_sum = np.sum(z_exp, axis=1, keepdims=True)
