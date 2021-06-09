@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 SIZES = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
 
 
+def plot_line(x_values, y_values, m, c):
+    _ = plt.plot(x_values, y_values, "o", label="Original data", markersize=10)
+    _ = plt.plot(x_values, m * x_values + c, "r", label="Fitted line")
+    _ = plt.legend()
+    _ = plt.title(f"intercept: {c:.2f}; slope: {m:.2f}")
+    plt.show()
+
+
 def make_linear_plot(
     accuracies,
     sizes,

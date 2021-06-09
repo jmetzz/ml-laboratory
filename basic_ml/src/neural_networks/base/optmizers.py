@@ -1,5 +1,5 @@
 class GradientDescent:
-    def run(epochs, los, learning_rate=0.01):
+    def run(self, epochs, los, learning_rate=0.01):
         """Find the weights wk and biases bl which minimize the cost function.
 
 

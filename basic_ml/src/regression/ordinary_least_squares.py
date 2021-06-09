@@ -1,33 +1,42 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+from visualization.linear_plots import plot_line
+
 
 def ols_sklearn(row):
-    """Solve Ordinary Least Squares using scikit-learn's LinearRegression"""
+    """
+    Solve Ordinary Least Squares using scikit-learn's LinearRegression
+    """
     estimator = LinearRegression()
-    data = np.arange(row.shape[0]).reshape(-1, 1)  # shape (14, 1)
+    data = np.arange(row.shape[0]).reshape(-1, 1)
     # note that the intercept is built inside LinearRegression
-    estimator.fit(data, row.values)
-    m = estimator.coef_[0]  # note c is in estimator.intercept_
-    return m
+    estimator.fit(data, row)
+    slope = estimator.coef_[0]
+    intercept = estimator.intercept_
+    return slope, intercept
 
 
-def ols_lstsq(row):
-    """Solve Ordinary Least Squares using numpy.linalg.lstsq"""
-    # build X values for [0, 13]
-    data = np.arange(row.shape[0])  # shape (14,)
-    ones = np.ones(row.shape[0])  # constant used to build intercept
-    matrix = np.vstack((data, ones)).T  # shape(14, 2)
-    # lstsq returns the coefficient and intercept as the first result
-    # followed by the residuals and other items
-    m, _ = np.linalg.lstsq(matrix, row.values, rcond=None)[0]
-    return m
+def ols_numpy(row):
+    """
+    Solve Ordinary Least Squares using numpy.linalg.lstsq
 
+    Fits a line `y = mx + c`.
+    We can rewrite the line equation as `y = Ap`,
+    where A = [[x 1]] and p = [[m], [c]].
 
-def ols_lstsq_raw(row):
-    """Variant of `ols_lstsq` where row is a numpy array (not a Series)"""
+    """
     data = np.arange(row.shape[0])
     ones = np.ones(row.shape[0])
     matrix = np.vstack((data, ones)).T
-    m, _ = np.linalg.lstsq(matrix, row, rcond=None)[0]
-    return m
+    slope, intercept = np.linalg.lstsq(matrix, row, rcond=None)[0]
+    return slope, intercept
+
+
+if __name__ == "__main__":
+    x_values = np.array([0, 1, 2, 3])
+    y_values = np.array([-1, 0.2, 0.9, 2.1])
+    m, c = ols_numpy(y_values)
+    # m, c = ols_sklearn(y_values)
+    plot_line(x_values, y_values, m, c)
+    print((m, c))
