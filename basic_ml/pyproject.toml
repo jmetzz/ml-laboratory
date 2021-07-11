@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "ml-lab"
+name = "basic-ml"
 version = "0.0.1"
-description = "Machine Learning lab code & examples"
+description = "Basic Machine Learning lab code & examples"
 authors = ["Jean Metz"]
 
 [tool.poetry.dependencies]
@@ -23,12 +23,11 @@ toml = "^0.10.2"
 tqdm = "^4.61.0"
 jupyterlab = {version = "^3.0.16", optional = true}
 ipywidgets = {version = "^7.6.3", optional = true}
-ipykernel = "^5.5.5"
-
-
+ipykernel = "6.0.3"
 
 
 [tool.poetry.dev-dependencies]
+colorama = "^0.4.4"
 black = "^21.5b2"
 mypy = "^0.812"
 pytest = "^6.2.4"
@@ -41,9 +40,9 @@ isort = "^5.8.0"
 pyupgrade = "^2.19.1"
 pydocstyle = "^6.1.1"
 pylint = "^2.8.3"
-colorama = "^0.4.4"
 bandit = "^1.7.0"
 ipython = "^7.24.1"
+toml = "^0.10.2"
 
 
 [tool.poetry.extras]
