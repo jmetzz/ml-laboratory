@@ -1,14 +1,6 @@
-.PHONY: all $(MAKECMDGOALS)
+.PHONY: $(MAKECMDGOALS)
 .EXPORT_ALL_VARIABLES:
 SHELL := /bin/bash -euo pipefail
-
-
-PYTHON_VERSION = 3.9.2
-PYTHON_INTERPRETER = python3
-PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-
-# common help message
-NOT_INSTALLED_MSG = "not installed. Make sure you have run 'make environment'"
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -20,13 +12,18 @@ CYAN ?= \033[0;36m
 GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
+
+PYTHON_VERSION = 3.9.2
+PYTHON_INTERPRETER = python3
+PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+# common help message
+NOT_INSTALLED_MSG = "not installed. Make sure you have run 'make environment'"
+
+
 ##################
 # Local commands #
 ##################
-
-## Run all make commands (environment test clean check format)
-all: environment test clean check format
-
 
 ifeq (,$(shell which pyenv))
 HAS_PYENV=False
@@ -48,30 +45,41 @@ endif
 interpreter: install_pyenv
 	@printf "$(CYAN)>>> Intalling required python version, if not available yet...$(COFF)\n"
 	@pyenv install -s $(PYTHON_VERSION)
-	@pyenv local $(PYTHON_VERSION)
 	pip3 install --user -U pip poetry
+	@pyenv local $(PYTHON_VERSION)
 	@printf "$(CYAN)>>> Done$(COFF)\n"
 
-
-## Install project dependencies
-environment: interpreter
-	@printf "$(CYAN)Updating git submodules and python deps$(COFF)\n"
+## Install Dev & Test Dependencies
+deps:
+	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
 	poetry install
-
-## Run static code checkers and linters
-check:
-	@printf "$(CYAN)Running static code analysis, tests and license generation$(COFF)\n"
-	poetry run isort --check --color src tests
-	poetry run black --check src tests
-	poetry run pylint src tests
-	poetry run mypy src --ignore-missing-imports
 
 ## Run unit tests
 test:
 	@printf "$(CYAN)Running test suite$(COFF)\n"
-	poetry run pytest --cov=src
+	poetry run pytest --cov=src --cov-fail-under 60
 
-## Remove temporary files created during build and all compiled Python files
+## Run static code checkers and linters
+check:
+	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
+	@printf " >>> $(YELLOW)isort$(COFF)\n"
+	poetry run isort --check --color src tests
+	@printf " >>> $(YELLOW)black$(COFF)\n"
+	poetry run black --check src tests
+	@printf " >>> $(YELLOW)flake8$(COFF)\n"
+	poetry run flake8 src tests
+	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
+	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
+	@printf "All $(GREEN)done$(COFF)\n"
+
+
+## Runs black formatter
+lint:
+	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
+	poetry run isort src tests
+	poetry run black src tests
+
+## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
 	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"
 	@rm -rf build/
@@ -81,15 +89,8 @@ clean:
 	@find . -type f -name '*.py[co]' -exec rm -f {} +
 	@find . -name '*~' -exec rm -f {} +
 	@find . -type f -name '.DS_Store' -delete
-	@echo "$(GREEN)>>> Removed pycache, .pyc, .pyo, .DS_Store files and files with ~$(COFF)"
+	@printf "$(GREEN)>>> Removed$(COFF) pycache, .pyc, .pyo, .DS_Store files and files with ~\n"
 
-## Runs black formatter
-lint:
-	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
-	poetry run isort src tests
-	poetry run black src tests
-	poetry run pip-licenses --with-authors -f markdown --output-file licenses.md
-	@printf "$(GREEN)>>> Done$(COFF)\n"
 
 ## Connect to the dev db with a port FWD (Broadcasts on local 12.0.0.1:5432)
 bastion:
@@ -97,7 +98,7 @@ bastion:
 	gcloud compute ssh test-connectivity-vm --project "$(GCP_PROJECT)"  --zone "$(GCP_ZONE)" --ssh-flag="-L 127.0.0.1:$(DB_PORT):$(TARGET_HOST_NAME):$(DB_PORT) -Nv"
 
 ## Upload Data to S3
-sync_data_to_s3:
+to_s3:
 ifeq (default,$(PROFILE))
 	aws s3 sync data/ s3://$(BUCKET)/data/
 else
@@ -105,7 +106,7 @@ else
 endif
 
 ## Download Data from S3
-sync_data_from_s3:
+from_s3:
 ifeq (default,$(PROFILE))
 	aws s3 sync s3://$(BUCKET)/data/ data/
 else
