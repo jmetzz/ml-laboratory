@@ -91,12 +91,11 @@ def get_residual_sum_of_squares(input_feature, y_values, intercept, slope):
     return np.sum(residuals * residuals)
 
 
-def gds_form(feature, y_values, step_size: float = 0.01, tolerance: float = 0.05, max_iter: int = 100):
+def gds_form(feature, y_values, step_size: float = 1e-2, tolerance: float = 1e-3, max_iter: int = 1e2):
     slope, intercept = ols_closed_form(feature, y_values)
     magnitude = np.inf
     iteration = 0
     while magnitude > tolerance and iteration < max_iter:
-        # Compute the predicted values given the current slope and intercept
         predictions = regression_prediction(feature, intercept, slope)
 
         # Compute the prediction errors (prediction - Y)

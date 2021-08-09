@@ -44,27 +44,24 @@ def random_init(size, seed=12345678903141592653589793):
 
 def gradient_descent_loop_form(feature_matrix,
                                y_values,
-                               step_size: float = 0.01,
-                               tolerance: float = 0.05,
-                               max_iter: int = 100,
+                               step_size: float = 1e-2,
+                               tolerance: float = 1e-3,
+                               max_iter: int = 1e2,
                                initializer=random_init):
     weights = initializer(feature_matrix.shape[1])
     converged = False
     iteration = 0
     while not converged and iteration < max_iter:
-        # compute the predictions based on feature_matrix and weights using your predict_output() function
         predictions = predict_output(feature_matrix, weights)
-        # compute the errors as predictions - output
         residual_errors = predictions - y_values
-        gradient_sum_squares = 0  # initialize the gradient sum of squares
-        # while we haven't reached the tolerance yet, update each feature's weight
+        gradient_sum_squares = 0
+
         for i in range(len(weights)):  # loop over each weight
             # Recall that feature_matrix[:, i] is the feature column associated with weights[i]
             # compute the derivative for weight[i]:
             derivative = feature_derivative(residual_errors, feature_matrix[:, i])
             # add the squared value of the derivative to the gradient sum of squares (for assessing convergence)
-            gradient_sum_squares += derivative**2
-            # subtract the step size times the derivative from the current weight
+            gradient_sum_squares += derivative ** 2
             weights[i] -= step_size * derivative
         # compute the square-root of the gradient sum of squares to get the gradient magnitude:
         gradient_magnitude = sqrt(gradient_sum_squares)
@@ -93,17 +90,15 @@ def feature_derivative(feature, errors):
 
 def gradient_descent_vectorized_form(feature_matrix,
                                      y_values,
-                                     step_size: float = 0.01,
-                                     tolerance: float = 0.05,
-                                     max_iter: int = 100,
+                                     step_size: float = 1e-2,
+                                     tolerance: float = 1e-3,
+                                     max_iter: int = 1e2,
                                      initializer=random_init):
     weights = initializer(feature_matrix.shape[1])
     converged = False
     iteration = 0
 
     while not converged and iteration < max_iter:
-        # prediction = predict_output(feature_matrix, weights)
-        # residual_errors = y_values - feature_matrix.T.dot(weights)
         residual_errors = y_values - feature_matrix.dot(weights.T)
         partials = -2 * feature_matrix.T.dot(residual_errors)
         weights += step_size * partials
@@ -133,4 +128,3 @@ if __name__ == "__main__":
     print(closed_w)
     print(loop_w)
     print(vectorized_w)
-
