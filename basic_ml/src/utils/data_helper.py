@@ -1,11 +1,8 @@
-import csv
-import json
-import os
 import random
-from pathlib import Path
 
-import h5py
 import numpy as np
+
+from utils.data_loader import load_from_csv
 
 
 def as_vector(idx, num_of_labels):
@@ -38,22 +35,6 @@ def normalize(data: np.ndarray, axis=1, order=2) -> np.ndarray:
     return data / np.linalg.norm(data, ord=order, axis=axis, keepdims=True)
 
 
-def split_set(content, ratio: float, labels=None) -> tuple:
-    temp_data = dict(content)
-    part_1 = {}
-    part_2 = {}
-    for label, data in temp_data.items():
-        if labels and label not in labels:
-            continue
-
-        random.shuffle(data)
-        split_point = int(len(data) * ratio)
-        part_1[label] = data[:split_point]
-        part_2[label] = data[split_point:]
-
-    return part_1, part_2
-
-
 def train_test_split(filename: str, split=0.5) -> tuple:
     """Retrieve the training and test randomly split of the dataset
     based on the given split value
@@ -71,43 +52,3 @@ def train_test_split(filename: str, split=0.5) -> tuple:
         else:
             test_set.append(value)
     return training_set, test_set
-
-
-def load_json_file(filename, labels=None, split_ratio=0.1):
-    with Path(filename).open() as json_file:
-        content = json.load(json_file)
-    return split_set(content, split_ratio, labels)
-
-
-def load_from_csv(filename: str) -> list:
-    """Loads the dataset from a file
-
-    :param filename: full path to the file containing the data
-    :return: a list of instances in the dataset
-    """
-    with Path(filename).open() as csv_file:
-        lines = csv.reader(csv_file)
-
-    content = list(filter(None, lines))
-    ncol = len(content[0])
-    nlin = len(content)
-    for line in range(nlin):
-        for col in range(ncol - 1):
-            content[line][col] = float(content[line][col])
-    return content
-
-
-def load_from_h5(path: str, name: str) -> tuple:
-    train = h5py.File(os.path.join(path, f"train_{name}.h5"), "r")
-    x_orig = np.array(train["train_set_x"][:])  # your train set features
-    y_orig = np.array(train["train_set_y"][:])  # your train set labels
-    y_orig = y_orig.reshape((1, y_orig.shape[0]))
-
-    test = h5py.File(os.path.join(path, f"test_{name}.h5"), "r")
-    test_x_orig = np.array(test["test_set_x"][:])  # your test set features
-    test_y_orig = np.array(test["test_set_y"][:])  # your test set labels
-    test_y_orig = test_y_orig.reshape((1, test_y_orig.shape[0]))
-
-    classes = np.array(test["list_classes"][:])  # the list of classes
-
-    return x_orig, y_orig, test_x_orig, test_y_orig, classes
