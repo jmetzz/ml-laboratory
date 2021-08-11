@@ -1,9 +1,10 @@
 from math import sqrt
 
 import numpy as np
-from numpy.linalg import inv
 from numpy import dot, power
-from numpy.random import default_rng
+from numpy.linalg import inv
+
+from regression.base import predict_output, random_init
 
 
 def multiple_linear_regression_closed_form(observations, y_values):
@@ -31,23 +32,17 @@ def multiple_linear_regression_closed_form(observations, y_values):
         I * w_hat = H^T * y * inv(H^T * H)
         w_hat = inv(H^T * H) * H^T * y
     """
-    return dot(
-        inv(observations.T @ observations),
-        observations.T.dot(y_values)
-    )
+    return dot(inv(observations.T @ observations), observations.T.dot(y_values))
 
 
-def random_init(size, seed=12345678903141592653589793):
-    rng = default_rng(seed)
-    return rng.standard_normal(size)
-
-
-def gradient_descent_loop_form(feature_matrix,
-                               y_values,
-                               step_size: float = 1e-2,
-                               tolerance: float = 1e-3,
-                               max_iter: int = 1e2,
-                               initializer=random_init):
+def gradient_descent_loop_form(
+    feature_matrix,
+    y_values,
+    step_size: float = 1e-2,
+    tolerance: float = 1e-3,
+    max_iter: int = 1e2,
+    initializer=random_init,
+):
     weights = initializer(feature_matrix.shape[1])
     converged = False
     iteration = 0
@@ -70,30 +65,18 @@ def gradient_descent_loop_form(feature_matrix,
     return weights
 
 
-def predict_output(feature_matrix: np.ndarray, weights: np.ndarray) -> np.ndarray:
-    """
-    Predict the regression value for N input elements
-
-    Args:
-        feature_matrix: a numpy matrix containing the features as columns
-        weights: the model weights as a numpy array
-
-    Returns:
-        the predictions vector as a np.array
-    """
-    return np.dot(feature_matrix, weights.T)
-
-
 def feature_derivative(feature, errors):
     return 2 * np.dot(errors, feature)
 
 
-def gradient_descent_vectorized_form(feature_matrix,
-                                     y_values,
-                                     step_size: float = 1e-2,
-                                     tolerance: float = 1e-3,
-                                     max_iter: int = 1e2,
-                                     initializer=random_init):
+def gradient_descent_vectorized_form(
+    feature_matrix,
+    y_values,
+    step_size: float = 1e-2,
+    tolerance: float = 1e-3,
+    max_iter: int = 1e2,
+    initializer=random_init,
+):
     weights = initializer(feature_matrix.shape[1])
     converged = False
     iteration = 0
@@ -110,12 +93,15 @@ def gradient_descent_vectorized_form(feature_matrix,
 
 if __name__ == "__main__":
     # first feature is the constant 1 (intercept)
-    feature_matrix = np.array([[1, 10, 3],
-                               [1, 2.5, 7],
-                               [1, 15, 8],
-                               [1, 6, 2],
-                               [1, 67, 37],
-                               ])
+    feature_matrix = np.array(
+        [
+            [1, 10, 3],
+            [1, 2.5, 7],
+            [1, 15, 8],
+            [1, 6, 2],
+            [1, 67, 37],
+        ]
+    )
 
     y_values = np.array([-1, 0.2, 0.9, 3, 0.6])
     step_size = 7e-12
