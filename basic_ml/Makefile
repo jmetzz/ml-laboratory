@@ -67,7 +67,7 @@ check:
 	@printf " >>> $(YELLOW)black$(COFF)\n"
 	poetry run black --check src tests
 	@printf " >>> $(YELLOW)flake8$(COFF)\n"
-	poetry run flake8 src tests
+	poetry run pylint src tests
 	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
 	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
 	@printf "All $(GREEN)done$(COFF)\n"
