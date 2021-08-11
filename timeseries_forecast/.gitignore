@@ -1,0 +1,52 @@
+target
+
+.profile_data
+.ipynb_checkpoints
+.pytest_cache
+
+
+# mac
+.DS_Store
+
+# editors
+.vscode
+
+# java
+.idea
+*.iml
+
+# data
+*.log
+*.avro
+*.tgz
+.db
+
+# secrets
+service_account_credentials.json
+
+# python
+*__pycache__
+*.egg-info
+build
+dist
+MANIFEST
+
+# python test
+.coverage
+.mypy_cache
+.pytest_cache/
+.tox
+
+# venvs
+.venv/
+env/
+venv/
+.env
+
+# ds related
+*.ipynb_checkpoints
+results/*.csv
+results/*.stats
+results/*.pkl
+results/*.dat
+results/*.txt
