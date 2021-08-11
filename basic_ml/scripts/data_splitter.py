@@ -1,8 +1,8 @@
 import argparse
+import json
+import random
 from pathlib import Path
 from shutil import copyfile
-
-from utils.data_helper import load_json_file, split_set
 
 
 def create_argument_parser():
@@ -97,6 +97,28 @@ def create_directory_structure(out_path: Path) -> tuple[Path, Path]:
         data_path.mkdir(parents=True)
 
     return metadata_path, data_path
+
+
+def load_json_file(filename, labels=None, split_ratio=0.1):
+    with Path(filename).open() as json_file:
+        content = json.load(json_file)
+    return split_set(content, split_ratio, labels)
+
+
+def split_set(content, ratio: float, labels=None) -> tuple:
+    temp_data = dict(content)
+    part_1 = {}
+    part_2 = {}
+    for label, data in temp_data.items():
+        if labels and label not in labels:
+            continue
+
+        random.shuffle(data)
+        split_point = int(len(data) * ratio)
+        part_1[label] = data[:split_point]
+        part_2[label] = data[split_point:]
+
+    return part_1, part_2
 
 
 binary_dataset = ["caesar_salad", "chicken_wings"]
