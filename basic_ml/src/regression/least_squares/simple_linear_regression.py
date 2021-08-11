@@ -46,7 +46,7 @@ def ols_closed_form(feature, y_values):
 
     Returns: the intercept and slope values as a tuple
 
-   """
+    """
     size = feature.shape[0]
     sum_features = np.sum(feature)
     sum_squared_features = np.sum(feature * feature)
@@ -70,25 +70,6 @@ def regression_prediction(input_feature, intercept, slope):
         the estimated value
     """
     return intercept + slope * input_feature
-
-
-def get_residual_sum_of_squares(input_feature, y_values, intercept, slope):
-    """
-    Calculate the Residual Sum of Squares (RSS)
-
-    The sum of the squares of the residuals and the residuals is
-    the difference between the predicted output and the true output.
-
-    Returns:
-        the RSS value
-    """
-
-    # First get the predictions
-    predictions = regression_prediction(input_feature, intercept, slope)
-    # then compute the residuals (since we are squaring it doesn't matter which order you subtract)
-    residuals = predictions - y_values
-    # square the residuals and add them up
-    return np.sum(residuals * residuals)
 
 
 def gds_form(feature, y_values, step_size: float = 1e-2, tolerance: float = 1e-3, max_iter: int = 1e2):
