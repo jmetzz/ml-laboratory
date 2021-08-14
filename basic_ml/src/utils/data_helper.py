@@ -13,12 +13,14 @@ def as_vector(idx, num_of_labels):
     from the neural network.
 
     """
+    if idx >= num_of_labels:
+        raise ValueError("Out of bounds. idx must be included in [0, num_of_label) interval")
     vector = np.zeros((num_of_labels, 1))
     vector[idx] = 1.0
     return vector
 
 
-def normalize(data: np.ndarray, axis=1, order=2) -> np.ndarray:
+def normalize(data: np.ndarray, axis=0, order=2) -> tuple[np.ndarray, np.ndarray]:
     """Normalize all elements in a vector or matrix
 
     This operation is done by dividing each row vector of x by its norm, i.e.,
@@ -26,13 +28,21 @@ def normalize(data: np.ndarray, axis=1, order=2) -> np.ndarray:
 
     After the operation each row of x should be a vector of unit length.
 
-    :param order: Order of the norm (see numpy.linalg.norm documentation)
-    :param axis: specifies the axis of the input array along which
-        to compute the vector norms. 0 for columns, and 1 for lines.
-    :param data: a numpy array to normalize
-    :return: a normalized version of the input array
+    Args:
+        data: a numpy array to normalize
+        order: Order of the norm (see numpy.linalg.norm documentation)
+        axis: specifies the axis of the input array along which
+            to compute the vector norms. 0 for columns, and 1 for lines.
+
+    Return:
+        - a normalized version of the input array
+        - the norm array
     """
-    return data / np.linalg.norm(data, ord=order, axis=axis, keepdims=True)
+    norms = np.linalg.norm(data, ord=order, axis=axis, keepdims=True)
+    return (
+        data / norms,
+        norms,
+    )
 
 
 def train_test_split(filename: str, split=0.5) -> tuple:
