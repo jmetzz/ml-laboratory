@@ -2,7 +2,7 @@ import numpy as np
 from numpy.random import default_rng
 
 
-def residual_sum_of_squares(predictions, y_values, intercept, slope):
+def residual_sum_of_squares(predictions, y_values):
     """
     Calculate the Residual Sum of Squares (RSS)
 
