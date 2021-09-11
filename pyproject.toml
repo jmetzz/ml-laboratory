@@ -29,5 +29,5 @@ disable = [
 notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry_core>=1.0.0"]
