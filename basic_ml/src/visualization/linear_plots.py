@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial import Voronoi, voronoi_plot_2d
 
 SIZES = [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
 
@@ -32,7 +34,22 @@ def make_linear_plot(
     plt.show()
 
 
+def voronoi_tessellation(data_points: np.ndarray):
+    vor = Voronoi(data_points)
+    _ = voronoi_plot_2d(vor,
+                          show_vertices=False,
+                          line_colors='orange',
+                          line_width=2,
+                          line_alpha=0.6,
+                          point_size=2)
+    plt.show()
+
+
 if __name__ == "__main__":
     acc = [70, 78, 83, 89, 92.3, 93.1, 93.5, 94.1, 94.7]
     make_linear_plot(acc, SIZES, title="Accuracy (%) on the validation data")
     make_linear_plot(acc, SIZES, title="Accuracy (%) on the validation data", xscale="log")
+
+    rng = np.random.default_rng()
+    points = rng.random((10, 2))
+    voronoi_tessellation(points)
