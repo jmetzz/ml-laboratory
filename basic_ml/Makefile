@@ -57,16 +57,13 @@ deps:
 ## Run unit tests
 test:
 	@printf "$(CYAN)Running test suite$(COFF)\n"
-	poetry run pytest --cov=src --cov-fail-under 60
+	poetry run pytest --cov=src
 
 ## Run static code checkers and linters
 check:
 	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
-	@printf " >>> $(YELLOW)isort$(COFF)\n"
 	poetry run isort --check --color src tests
-	@printf " >>> $(YELLOW)black$(COFF)\n"
 	poetry run black --check src tests
-	@printf " >>> $(YELLOW)flake8$(COFF)\n"
 	poetry run pylint src tests
 	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
 	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
