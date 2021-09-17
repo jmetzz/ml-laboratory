@@ -10,27 +10,22 @@ jupyterlab = { version = "^3.0.16", optional = true }
 ipywidgets = { version = "^7.6.3", optional = true }
 ipykernel = { version = "^5.5.5", optional = true }
 tensorflow = "^2.5.0"
+numpy = "1.19.5"
+matplotlib = "3.2.2"
+pandas = "^1.3.3"
 
 [tool.poetry.dev-dependencies]
 black = "^21.5b2"
-flake9 = "^3.8.3"
 mypy = "^0.812"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 pytest-sugar = "^0.9.4"
-flake8-bandit = "^2.1.2"
-flake8-bugbear = "^21.4.3"
-flake8-use-pathlib = "^0.2.0"
-flake8-noqa = "^1.1.0"
-flake8-assert-msg = "^1.1.1"
-flake8-typing-imports = "^1.10.1"
 responses = "^0.13.3"
 ipdb = "^0.13.9"
 pip-licenses = "^3.4.0"
 isort = "^5.8.0"
 pyupgrade = "^2.19.1"
 pydocstyle = "^6.1.1"
-pylint = "^2.8.3"
 colorama = "^0.4.4"
 
 
@@ -55,15 +50,17 @@ ignore = []
 max-line-length = "120"
 
 [tool.pylint.messages_control]
+# pylint: disable=unsubscriptable-object is used here due to a bug
+# showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
 disable = [
     "bad-whitespace",
+    "wrong-hanging-indentation-before-block",
     "trailing-whitespace",
     "missing-module-docstring",
     "missing-function-docstring",
-    "unsubscriptable-object"]
-
-# pylint: disable=unsubscriptable-object is used here due to a bug
-# showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
+    "missing-class-docstring",
+    "unsubscriptable-object",
+    ]
 
 [tool.pylint.miscellaneous]
 notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"

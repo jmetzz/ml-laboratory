@@ -42,10 +42,10 @@ jupyter = ["ipykernel", "jupyterlab", "ipywidgets"]
 profile = "black"
 
 [tool.black]
-exclude = '(\.git|\.mypy_cache|\.venv)'
-include = '\.pyi?$'
-line-length = 78
+line-length = 120
 target-version = ['py38']
+include = '\.pyi?$'
+exclude = '(\.git|\.mypy_cache|\.venv)'
 
 [tool.pylint.master]
 extension-pkg-whitelist = ["pydantic"]
@@ -56,21 +56,23 @@ ignore = []
 max-line-length = "120"
 
 [tool.pylint.messages_control]
-disable = [
-  "bad-whitespace",
-  "trailing-whitespace",
-  "missing-module-docstring",
-  "missing-function-docstring",
-  "missing-class-docstring",
-  "unsubscriptable-object",
-]
 # pylint: disable=unsubscriptable-object is used here due to a bug
 # showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
+disable = [
+    "bad-whitespace",
+    "wrong-hanging-indentation-before-block",
+    "trailing-whitespace",
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "missing-class-docstring",
+    "unsubscriptable-object",
+    ]
 
 [tool.pylint.miscellaneous]
 notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
 
 [tool.pytest.ini_options]
+addopts = "--pdbcls=IPython.terminal.debugger:TerminalPdb --cov=src --cov-fail-under 80"
 
 [tool.coverage.report]
 omit = ["*/__init__.py", ".mypy_cache", ".reports", ".git"]
