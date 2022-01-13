@@ -5,7 +5,7 @@ name = "deep_learning_deployment"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
-Pillow = "^8.3.1"
+Pillow = "^9.0.0"
 cvlib = "0.2.5"
 fastapi = "^0.68.0"
 ipykernel = "6.0.3"
