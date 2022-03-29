@@ -1,6 +1,7 @@
 import io
 import os
 from enum import Enum
+from tempfile import mkdtemp
 
 import cv2
 import cvlib as cv
@@ -12,14 +13,13 @@ from fastapi.responses import StreamingResponse
 
 app = FastAPI(title="Deploying a ML Model with FastAPI")
 
+TEMP_OUTPUT_DIR = mkdtemp()
+
 
 class Model(str, Enum):
     """
     List available models using Enum for convenience.
-
-    This is useful when the options are pre-defined.
     """
-
     yolov3tiny = "yolov3-tiny"
     yolov3 = "yolov3"
 
@@ -30,54 +30,49 @@ def home():
 
 
 @app.post("/predict")
-def prediction(model: Model, file: UploadFile = File(...)):
+def prediction(model: Model, image_file: UploadFile = File(...)):
     """
-    This endpoint handles all the logic necessary for the object detection to work.
+    Endpoint to handles the object detection request.
 
-    It requires the desired model and the image in which to perform object detection.
+    :param model: either yolov3-tiny or yolov3 enum.
+    :param image_file: the file reference to the target image
+
     """
-    # 1. VALIDATE INPUT FILE
-    filename = file.filename
-    file_extension = filename.split(".")[-1] in ("jpg", "jpeg", "png")
+
+    file_extension = image_file.filename.split(".")[-1] in ("jpg", "jpeg", "png")
     if not file_extension:
         raise HTTPException(
             status_code=415, detail="Unsupported file provided."
         )
-
-    # 2. TRANSFORM RAW IMAGE INTO CV2 image
-    image = image2cv2(file)
-
-    # 3. RUN OBJECT DETECTION MODEL
-
-    # Run object detection
+    image = image2cv2(image_file)
     bbox, label, conf = cv.detect_common_objects(image, model=model)
-
-    # Create image that includes bounding boxes and labels
     output_image = draw_bbox(image, bbox, label, conf)
+    temp_file = f"{TEMP_OUTPUT_DIR}/{image_file.filename}"
+    if not cv2.imwrite(temp_file, output_image):
+        raise Exception("Could not save temporary image in the server")
 
-    # Save it in a folder within the server
-    cv2.imwrite(f"images_uploaded/{filename}", output_image)
+    tagged_image = open(temp_file, mode="rb")
 
-    # 4. STREAM THE RESPONSE BACK TO THE CLIENT
-
-    # Open the saved image for reading in binary mode
-    file_image = open(f"images_uploaded/{filename}", mode="rb")
-
-    # Return the image as a stream specifying media type
-    return StreamingResponse(file_image, media_type="image/jpeg")
+    return StreamingResponse(tagged_image, media_type="image/jpeg")
 
 
-def image2cv2(file):
-    # Read image as a stream of bytes
-    image_stream = io.BytesIO(file.file.read())
+def image2cv2(image_file: UploadFile = File(...)):
+    """
+    Decode the image file
 
-    # Start the stream from the beginning (position zero)
+    This function reads the image as a stream of bytes,
+    writes its stream of bytes into a numpy array, and
+    decode it as an image.
+    Args:
+        image_file: the file reference to the image
+
+    Returns:
+        the CV2 image object
+
+    """
+    image_stream = io.BytesIO(image_file.file.read())
     image_stream.seek(0)
-
-    # Write the stream of bytes into a numpy array
     file_bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
-
-    # Decode the numpy array as an image
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     return image
 
@@ -85,5 +80,4 @@ def image2cv2(file):
 if __name__ == "__main__":
     # Host depends on the setup you selected (docker or virtual env)
     host = "0.0.0.0" if os.getenv("DOCKER-SETUP") else "127.0.0.1"
-    # Spin up the server!
     uvicorn.run(app, host=host, port=8000)
