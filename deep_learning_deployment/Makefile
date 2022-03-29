@@ -54,31 +54,6 @@ deps:
 	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
 	poetry install
 
-## Run unit tests
-test:
-	@printf "$(CYAN)Running test suite$(COFF)\n"
-	poetry run pytest --cov=src --cov-fail-under 60
-
-## Run static code checkers and linters
-check:
-	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
-	@printf " >>> $(YELLOW)isort$(COFF)\n"
-	poetry run isort --check --color src tests
-	@printf " >>> $(YELLOW)black$(COFF)\n"
-	poetry run black --check src tests
-	@printf " >>> $(YELLOW)flake8$(COFF)\n"
-	poetry run pylint src tests
-	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
-	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
-	@printf "All $(GREEN)done$(COFF)\n"
-
-
-## Runs black formatter
-lint:
-	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
-	poetry run isort src tests
-	poetry run black src tests
-
 ## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
 	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"
@@ -90,28 +65,6 @@ clean:
 	@find . -name '*~' -exec rm -f {} +
 	@find . -type f -name '.DS_Store' -delete
 	@printf "$(GREEN)>>> Removed$(COFF) pycache, .pyc, .pyo, .DS_Store files and files with ~\n"
-
-
-## Connect to the dev db with a port FWD (Broadcasts on local 12.0.0.1:5432)
-bastion:
-	@printf "$(GREEN)Postgres will be listening on 127.0.0.1:5432$(COFF)\n"
-	gcloud compute ssh test-connectivity-vm --project "$(GCP_PROJECT)"  --zone "$(GCP_ZONE)" --ssh-flag="-L 127.0.0.1:$(DB_PORT):$(TARGET_HOST_NAME):$(DB_PORT) -Nv"
-
-## Upload Data to S3
-to_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
-
-## Download Data from S3
-from_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
 
 
 #################################################################################
