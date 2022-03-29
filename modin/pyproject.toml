@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "dask-sandbox"
+version = "0.0.1"
+description = "Modin real case examples"
+authors = ["Jean Metz"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+modin = {extras = ["all"], version = "^0.13.3"}
+pandas = "^1.4.1"
+numpy = "^1.22.3"
+jupyterlab = "^3.3.2"
+ipywidgets = "^7.7.0"
+ipykernel = "^6.10.0"
+numexpr = "^2.8.1"
+jupyterlab-widgets = "^1.1.0"
+pyarrow = "^7.0.0"
+
+
+[tool.poetry.dev-dependencies]
+colorama = "^0.4.4"
+black = "^21.5b2"
+mypy = "^0.812"
+pytest = "^6.2.4"
+pytest-cov = "^2.12.1"
+pytest-sugar = "^0.9.4"
+responses = "^0.13.3"
+ipdb = "^0.13.9"
+pip-licenses = "^3.4.0"
+isort = "^5.8.0"
+pyupgrade = "^2.19.1"
+pydocstyle = "^6.1.1"
+pylint = "^2.8.3"
+bandit = "^1.7.0"
+ipython = "^7.24.1"
+toml = "^0.10.2"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry_core>=1.0.0"]
