@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "dask-sandbox"
 version = "0.0.1"
-description = "Dask real case examples"
+description = "Dask examples"
 authors = ["Jean Metz"]
 
 [tool.poetry.dependencies]
@@ -12,13 +12,16 @@ jupyterlab = "^3.0.16"
 ipywidgets = "^7.6.3"
 ipykernel = "6.0.3"
 pyarrow = "^6.0.0"
-#dask[complete]
-#dask-ml
-#fastparquet==0.7.1
-#murmurhash==1.0.5
-#bokeh==2.4.0
-#numexpr
-
+dask = {extras = ["complete"], version = "^2022.3.0"}
+dask-ml = "^2022.1.22"
+fastparquet = "^0.8.0"
+bokeh = "^2.4.2"
+numexpr = "^2.8.1"
+scipy = "^1.6.1"
+scikit-learn = "^1.0.2"
+numba = "0.51.2"
+murmurhash = "^1.0.6"
+graphviz = "^0.19.1"
 
 [tool.poetry.dev-dependencies]
 colorama = "^0.4.4"
