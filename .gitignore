@@ -78,3 +78,6 @@ venv.bak/
 
 # Other
 /data/non_versioned/
+/dask/data_cache/
+/modin/data_cache/
+/modin/dask-worker-space/
