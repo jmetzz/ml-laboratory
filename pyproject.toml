@@ -28,6 +28,24 @@ disable = [
 [tool.pylint.miscellaneous]
 notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
 
+[tool.poetry.dependencies]
+colorama = "*"
+black = "*"
+mypy = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-sugar = "*"
+responses = "*"
+ipdb = "*"
+pip-licenses = "*"
+isort = "*"
+pyupgrade = "*"
+pylint = "*"
+bandit = "*"
+ipython = "*"
+toml = "*"
+
+
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry_core>=1.0.0"]
