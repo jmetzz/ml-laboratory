@@ -28,7 +28,7 @@ ipykernel = "6.0.3"
 
 [tool.poetry.dev-dependencies]
 colorama = "^0.4.4"
-black = "^21.5b2"
+black = "^22.3.0"
 mypy = "^0.812"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
@@ -56,6 +56,7 @@ line-length = 120
 target-version = ['py38']
 include = '\.pyi?$'
 exclude = '(\.git|\.mypy_cache|\.venv)'
+
 
 [tool.pylint.master]
 extension-pkg-whitelist = ["pydantic"]

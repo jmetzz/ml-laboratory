@@ -32,9 +32,7 @@ def load_cached_object(
 
     if ext == "parquet":
         ddf = (
-            dd.read_parquet(
-                target_file.resolve(), engine="pyarrow", chunksize=chunksize
-            )
+            dd.read_parquet(target_file.resolve(), engine="pyarrow", chunksize=chunksize)
             if target_file.exists()
             else None
         )
@@ -70,16 +68,12 @@ def export_dataframe_to_fs(
     target_file = str(Path(target_dir, f"{filename}.{ext}").resolve())
     # with target_file.open("wb+") as file_pointer:
     if ext == "parquet":
-        data_df.to_parquet(
-            target_file, compression="gzip", engine="pyarrow", index=False
-        )
+        data_df.to_parquet(target_file, compression="gzip", engine="pyarrow", index=False)
     else:
         raise ValueError(f"Format '{ext}'not supported")
 
 
-def export_object_to_fs(
-    cache_path: Path, obj: object, run_config: RunConfig, filename: str
-) -> None:
+def export_object_to_fs(cache_path: Path, obj: object, run_config: RunConfig, filename: str) -> None:
     target_dir = Path(
         cache_path,
         str(run_config.country),

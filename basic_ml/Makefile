@@ -40,7 +40,6 @@ else
 	@printf "$(CYAN)>>> pyenv is already installed$(COFF)\n"
 endif
 
-
 ## Install the necessary python version
 interpreter: install_pyenv
 	@printf "$(CYAN)>>> Installing required python version, if not available yet...$(COFF)\n"

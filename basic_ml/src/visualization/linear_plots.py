@@ -36,12 +36,7 @@ def make_linear_plot(
 
 def voronoi_tessellation(data_points: np.ndarray):
     vor = Voronoi(data_points)
-    _ = voronoi_plot_2d(vor,
-                          show_vertices=False,
-                          line_colors='orange',
-                          line_width=2,
-                          line_alpha=0.6,
-                          point_size=2)
+    _ = voronoi_plot_2d(vor, show_vertices=False, line_colors="orange", line_width=2, line_alpha=0.6, point_size=2)
     plt.show()
 
 
