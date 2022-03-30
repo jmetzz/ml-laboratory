@@ -43,7 +43,7 @@ endif
 
 ## Install the necessary python version
 interpreter: install_pyenv
-	@printf "$(CYAN)>>> Intalling required python version, if not available yet...$(COFF)\n"
+	@printf "$(CYAN)>>> Installing required python version, if not available yet...$(COFF)\n"
 	@pyenv install -s $(PYTHON_VERSION)
 	pip3 install --user -U pip poetry
 	@pyenv local $(PYTHON_VERSION)
