@@ -13,35 +13,6 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 
-## Install the necessary python version
-interpreter: install_pyenv
-	@printf "$(CYAN)>>> Installing required python version, if not available yet...$(COFF)\n"
-	@pyenv install -s $(PYTHON_VERSION)
-	pip3 install --user -U pip poetry
-	@pyenv local $(PYTHON_VERSION)
-	@printf "$(CYAN)>>> Done$(COFF)\n"
-
-## Install Dev & Test Dependencies
-deps:
-	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
-	poetry install
-
-## Run static code checkers and linters
-check:
-	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
-	poetry run isort --check --color .
-	poetry run black --check .
-	poetry run pylint .
-	@printf "All $(GREEN)done$(COFF)\n"
-
-
-## Runs black formatter
-lint:
-	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
-	poetry run isort .
-	poetry run black .
-
-
 ## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
 	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"

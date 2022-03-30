@@ -56,7 +56,7 @@ def gradient_descent_loop_form(
             # compute the derivative for weight[i]:
             derivative = feature_derivative(residual_errors, feature_matrix[:, i])
             # add the squared value of the derivative to the gradient sum of squares (for assessing convergence)
-            gradient_sum_squares += derivative ** 2
+            gradient_sum_squares += derivative**2
             weights[i] -= step_size * derivative
         # compute the square-root of the gradient sum of squares to get the gradient magnitude:
         gradient_magnitude = sqrt(gradient_sum_squares)

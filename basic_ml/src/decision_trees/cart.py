@@ -1,4 +1,8 @@
 import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+from common.evaluation import accuracy
 
 
 class CART:
@@ -144,11 +148,6 @@ class CART:
 
 if __name__ == "__main__":
     import pprint as pp
-
-    from sklearn.datasets import load_iris
-    from sklearn.model_selection import train_test_split
-
-    from common.evaluation import accuracy
 
     mock_stump = {"index": 0, "right": 1, "value": 6.642287351, "left": 0}
     print("Mock tree:")

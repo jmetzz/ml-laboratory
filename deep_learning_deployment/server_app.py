@@ -20,6 +20,7 @@ class Model(str, Enum):
     """
     List available models using Enum for convenience.
     """
+
     yolov3tiny = "yolov3-tiny"
     yolov3 = "yolov3"
 
@@ -41,9 +42,7 @@ def prediction(model: Model, image_file: UploadFile = File(...)):
 
     file_extension = image_file.filename.split(".")[-1] in ("jpg", "jpeg", "png")
     if not file_extension:
-        raise HTTPException(
-            status_code=415, detail="Unsupported file provided."
-        )
+        raise HTTPException(status_code=415, detail="Unsupported file provided.")
     image = image2cv2(image_file)
     bbox, label, conf = cv.detect_common_objects(image, model=model)
     output_image = draw_bbox(image, bbox, label, conf)

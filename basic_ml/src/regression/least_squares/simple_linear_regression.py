@@ -94,7 +94,7 @@ def gds_form(feature, y_values, step_size: float = 1e-2, tolerance: float = 1e-3
         slope -= step_size * partial
 
         # Compute the magnitude of the gradient
-        magnitude = np.sqrt(sum(residual_errors ** 2, partial ** 2))
+        magnitude = np.sqrt(sum(residual_errors**2, partial**2))
         iteration += 1
 
     return slope, intercept

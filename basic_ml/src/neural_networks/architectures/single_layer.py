@@ -18,7 +18,7 @@ class SingleLayer:
                 # print(weights) # uncomment the check the change in weights
                 predicted = self.neuron.predict(x[:-1], self.weights)
                 error = x[-1] - predicted
-                sum_error += error ** 2
+                sum_error += error**2
                 for i in range(self.dimension):
                     self.weights[i + 1] += self.eta * error * x[i]
             print(">epoch=%d, learning rate=%.3f, error=%.3f" % (e, self.eta, sum_error))
