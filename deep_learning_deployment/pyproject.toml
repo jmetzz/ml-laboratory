@@ -17,7 +17,7 @@ nest-asyncio = "^1.5.1"
 opencv-python-headless = "4.4.0.46"
 python-multipart = "^0.0.5"
 pyyaml = "5.4.1"
-tensorflow = "^2.6.0"
+tensorflow = "^2.8.1"
 toml = "^0.10.2"
 uvicorn = "^0.15.0"
 
