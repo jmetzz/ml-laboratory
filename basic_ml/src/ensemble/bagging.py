@@ -3,7 +3,7 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
-from ensemble.ensemble_utils import Sampling
+from common import sampling
 
 
 class BaggingClassifier:
@@ -13,7 +13,7 @@ class BaggingClassifier:
 
     def fit(self, instances, true_labels):
         for idx in range(self.size):
-            features, labels = Sampling.subsample(instances, true_labels, 1.0)
+            features, labels = sampling.subsample(instances, true_labels)
             self.models[idx].fit(features, labels)
 
     def predict(self, instances):

@@ -3,7 +3,7 @@ from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
-from ensemble.ensemble_utils import Sampling
+from common import sampling
 from utils import datasets
 
 
@@ -43,7 +43,7 @@ class AdaBoostM1Classifier:
         self.model["errors"] = np.zeros((self.model["rounds"], 1))
         for step in range(self.model["rounds"]):
             while True:
-                features, labels = Sampling.subsample(instances, transformed_labels, self.model["weights"])
+                features, labels = sampling.subsample(instances, transformed_labels, self.model["weights"])
                 self.classifiers[step].fit(features, labels)
                 predictions = self.classifiers[step].predict(instances)
                 # store the current prediction in a cache to be used for weights update
