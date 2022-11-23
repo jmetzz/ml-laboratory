@@ -25,55 +25,40 @@ NOT_INSTALLED_MSG = "not installed. Make sure you have run 'make environment'"
 # Local commands #
 ##################
 
-ifeq (,$(shell which pyenv))
-HAS_PYENV=False
+initialize:
+ifneq ($(wildcard .git),)
+	@printf "$(CYAN)>>> Repository already initialized.$(COFF)\n"
 else
-HAS_PYENV=True
+	@printf "$(CYAN)>>> Initializing git repository.$(COFF)\n"
+	git init
 endif
 
-
-install_pyenv:
-ifeq (,$(shell which pyenv))
-	@printf "$(CYAN)>>> Installing pyenv ...$(COFF)\n"
-	curl https://pyenv.run | bash
-else
-	@printf "$(CYAN)>>> pyenv is already installed$(COFF)\n"
-endif
-
-## Install the necessary python version
-interpreter: install_pyenv
-	@printf "$(CYAN)>>> Installing required python version, if not available yet...$(COFF)\n"
-	@pyenv install -s $(PYTHON_VERSION)
-	pip3 install --user -U pip poetry
-	@pyenv local $(PYTHON_VERSION)
-	@printf "$(CYAN)>>> Done$(COFF)\n"
-
-## Install Dev & Test Dependencies
-deps:
+## Install dependencies, including dev & test dependencies
+deps: initialize
 	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
 	poetry install
+	poetry run pre-commit install
 
 ## Run unit tests
 test:
 	@printf "$(CYAN)Running test suite$(COFF)\n"
-	poetry run pytest --cov=src
+	poetry run pytest --cov=src --cov-fail-under 60
 
 ## Run static code checkers and linters
 check:
 	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
 	poetry run isort --check --color src tests
 	poetry run black --check src tests
-	poetry run pylint src tests
-	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
-	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
+	poetry run flake8 src tests
 	@printf "All $(GREEN)done$(COFF)\n"
-
 
 ## Runs black formatter
 lint:
 	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
 	poetry run isort src tests
 	poetry run black src tests
+	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
+	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
 
 ## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
