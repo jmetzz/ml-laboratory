@@ -7,49 +7,63 @@ authors = ["Jean Metz"]
 [tool.poetry.dependencies]
 python = ">=3.9.2,<3.11"
 environs = "^9.3.2"
-click = "^8.0.1"
-python-dotenv = "^0.17.1"
 numpy = "^1.21.0"
 matplotlib = "^3.4.2"
 pandas = "^1.2.4"
 scikit-learn = "^1.1.1"
 scikit-image = "^0.19.2"
-seaborn = "^0.11.1"
 Pillow = "^9.3.0"
 statsmodels = "^0.13.2"
 h5py = "^3.2.1"
 toml = "^0.10.2"
 tqdm = "^4.61.0"
-jupyterlab = {version = "^3.0.16", optional = true}
-ipywidgets = {version = "^7.6.3", optional = true}
 scipy = "^1.8.1"
 importlib-resources = "^5.7.1"
-memory-profiler = {version = "^0.60.0", optional = true}
+typer = {extras = ["all"], version = "^0.7.0"}
+seaborn = "^0.12.1"
 
 
-
-[tool.poetry.dev-dependencies]
-colorama = "^0.4.4"
-black = "^22.3.0"
-mypy = "^0.812"
-pytest = "^6.2.4"
-pytest-cov = "^2.12.1"
-pytest-sugar = "^0.9.4"
-responses = "^0.13.3"
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5.0.4"
+flake8-bandit = "^4.1.1"
+flake8-bugbear = "^22.10.27"
+flake8-builtins = "^2.0.1"
+flake8-comprehensions = "^3.10.1"
+flake8-debugger = "^4.1.2"
+flake8-eradicate = "^1.4.0"
+flake8-implicit-str-concat = "^0.3.0"
+flake8-logging-format = "^0.9.0"
+flake8-mutable = "^1.2.0"
+flake8-pytest-style = "^1.6.0"
+flake8-print = "^5.0.0"
+flake8-use-pathlib = "^0.3.0"
+pep8-naming = "^0.13.2"
+colorama = "^0.4.6"
+black = "^22.10.0"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-sugar = "^0.9.6"
 ipdb = "^0.13.9"
-ipykernel = "^6.13.0"
-pip-licenses = "^3.4.0"
-isort = "^5.8.0"
-pyupgrade = "^2.19.1"
-pydocstyle = "^6.1.1"
-pylint = "^2.8.3"
-bandit = "^1.7.0"
-ipython = "^7.24.1"
+pip = "^22.3.1"
+pyupgrade = "^3.2.2"
+pylint = "^2.15.6"
+bandit = "^1.7.4"
+ipython = "^8.6.0"
 toml = "^0.10.2"
+pip-licenses = "^4.0.1"
+isort = "^5.10.1"
+pydocstyle = "^6.1.1"
+ipykernel = "^6.17.1"
+responses = "^0.22.0"
+pre-commit = "^2.20.0"
+ipywidgets = "^8.0.2"
+jupyterlab = "^3.5.0"
+memory-profiler = "^0.61.0"
 
 
 [tool.poetry.extras]
 jupyter = ["ipykernel", "jupyterlab", "ipywidgets", "memory-profiler"]
+
 
 [tool.isort]
 profile = "black"
@@ -70,16 +84,11 @@ ignore = []
 max-line-length = "120"
 
 [tool.pylint.messages_control]
-# pylint: disable=unsubscriptable-object is used here due to a bug
-# showing too many false-positives. See https://github.com/PyCQA/pylint/issues/3882
 disable = [
-    "bad-whitespace",
-    "wrong-hanging-indentation-before-block",
     "trailing-whitespace",
     "missing-module-docstring",
     "missing-function-docstring",
     "missing-class-docstring",
-    "unsubscriptable-object",
     ]
 
 [tool.pylint.miscellaneous]
