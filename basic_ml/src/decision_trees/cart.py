@@ -1,8 +1,8 @@
-import numpy as np
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
+import json
 
-from common.evaluation import accuracy
+import numpy as np
+
+from utils.encoders import NumpyArrayEncoder
 
 
 class CART:
@@ -13,7 +13,7 @@ class CART:
 
     def fit(self, instances, true_labels):
         self._model["dimensions"] = instances.shape[1]
-        self._model["labels"] = np.unique(true_labels)
+        self._model["labels"] = tuple(np.unique(true_labels))
         self._model["root"] = root = self._select_split(instances, true_labels)
         self._split_node(root, 1)
 
@@ -134,7 +134,7 @@ class CART:
     def _to_terminal_node(labels):
         """Creates a terminal node value
 
-        The created terminal node comprises of all instances present in the given group
+        The created terminal node consists of all instances present in the given group
 
         Returns:
             the label with the majority of elements in the group
@@ -142,30 +142,5 @@ class CART:
         labels, counts = np.unique(labels, return_counts=True)
         return labels[np.argmax(counts)]
 
-    def summary(self):
-        print(self._model)
-
-
-if __name__ == "__main__":
-    import pprint as pp
-
-    mock_stump = {"index": 0, "right": 1, "value": 6.642287351, "left": 0}
-    print("Mock tree:")
-    print(mock_stump)
-
-    X, y = load_iris(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=31)
-
-    model = CART(max_depth=4, min_size=1)
-    model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
-    acc = accuracy(y_test, predictions)
-    pp.pprint(model._model)
-    print(f"Accuracy is {acc:.2f}")
-
-    model_stump = CART(max_depth=1, min_size=1)
-    model_stump.fit(X_train, y_train)
-    predictions = model_stump.predict(X_test)
-    acc = accuracy(y_test, predictions)
-    pp.pprint(model_stump._model)
-    print(f"Accuracy is {acc:.2f}")
+    def summary(self) -> str:
+        return json.dumps(self._model, cls=NumpyArrayEncoder)
