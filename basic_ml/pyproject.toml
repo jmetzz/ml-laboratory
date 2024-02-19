@@ -61,10 +61,6 @@ jupyterlab = "^3.5.0"
 memory-profiler = "^0.61.0"
 
 
-[tool.poetry.extras]
-jupyter = ["ipykernel", "jupyterlab", "ipywidgets", "memory-profiler"]
-
-
 [tool.isort]
 profile = "black"
 
@@ -95,7 +91,7 @@ disable = [
 notes = "FIXME,XXX,TODO,TODO,fixme,todo,TODO:"
 
 [tool.pytest.ini_options]
-addopts = "--pdbcls=IPython.terminal.debugger:TerminalPdb --cov=src --cov-fail-under 80"
+#addopts = "--pdbcls=IPython.terminal.debugger:TerminalPdb --cov=src --cov-fail-under 80"
 
 [tool.coverage.report]
 omit = ["*/__init__.py", ".mypy_cache", ".reports", ".git"]

@@ -1,0 +1,89 @@
+# MacOS
+.DS_Store
+
+# IDEs
+.idea
+.vscode
+
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+**/target
+*.egg-info
+build
+dist
+MANIFEST
+
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+**/.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environments and dev config
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# cython
+*.so
+
+# secrets
+service_account_credentials.json
+
+# Other
+.profile_data
+.resouces/tmp_data
+
+
+# data
+*.log
+*.avro
+*.tgz
+.db
+
+
+# ds related
+*.ipynb_checkpoints
+results/*.csv
+results/*.stats
+results/*.pkl
+results/*.dat
+results/*.txt

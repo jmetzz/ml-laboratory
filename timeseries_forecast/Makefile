@@ -13,13 +13,6 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 
-PYTHON_VERSION = 3.9.2
-PYTHON_INTERPRETER = python3
-PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-
-# common help message
-NOT_INSTALLED_MSG = "not installed. Make sure you have run 'make environment'"
-
 
 ##################
 # Local commands #
