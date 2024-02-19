@@ -15,7 +15,7 @@ ipywidgets = {version = "^7.6.3", optional = true}
 jupyterlab = "3.1.7"
 nest-asyncio = "^1.5.1"
 opencv-python-headless = "4.4.0.46"
-python-multipart = "^0.0.5"
+python-multipart = "^0.0.7"
 pyyaml = "5.4.1"
 tensorflow = "^2.8.1"
 toml = "^0.10.2"
