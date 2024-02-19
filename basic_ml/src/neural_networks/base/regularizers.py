@@ -1,2 +1,8 @@
 # TODO: implement L1 regularization
-# TODO: implement L2 regularization
+
+def l2_penalty(w):
+    return (w ** 2).sum() / 2
+
+
+def l1_penalty(w):
+    pass

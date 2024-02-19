@@ -1,19 +1,77 @@
-target
-
-.profile_data
-.ipynb_checkpoints
-.pytest_cache
-
-
-# mac
+# MacOS
 .DS_Store
 
-# editors
+# IDEs
+.idea
 .vscode
 
-# java
-.idea
-*.iml
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+**/target
+*.egg-info
+build
+dist
+MANIFEST
+
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+**/.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environments and dev config
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# cython
+*.so
+
+# secrets
+service_account_credentials.json
+
+# Other
+.profile_data
+.resouces/tmp_data
+
 
 # data
 *.log
@@ -21,27 +79,6 @@ target
 *.tgz
 .db
 
-# secrets
-service_account_credentials.json
-
-# python
-*__pycache__
-*.egg-info
-build
-dist
-MANIFEST
-
-# python test
-.coverage
-.mypy_cache
-.pytest_cache/
-.tox
-
-# venvs
-.venv/
-env/
-venv/
-.env
 
 # ds related
 *.ipynb_checkpoints

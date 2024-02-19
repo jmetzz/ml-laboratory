@@ -17,12 +17,38 @@ COFF ?= \033[0m
 # Local commands #
 ##################
 
+initialize:
+ifneq ($(wildcard .git),)
+	@printf "$(CYAN)>>> Repository already initialized.$(COFF)\n"
+else
+	@printf "$(CYAN)>>> Initializing git repository.$(COFF)\n"
+	git init
+endif
 
-## Install Dev & Test Dependencies
-deps:
+## Install dependencies, including dev & test dependencies
+deps: initialize
 	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
 	poetry install
+	poetry run pre-commit install
 
+## Run unit tests
+test:
+	@printf "$(CYAN)Running test suite$(COFF)\n"
+	poetry run pytest --cov=src --cov-fail-under 60
+
+## Run static code checkers and linters
+check:
+	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
+	poetry run ruff check src tests notebooks
+	@printf "All $(GREEN)done$(COFF)\n"
+
+## Runs black formatter
+lint:
+	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
+	poetry run ruff src tests --fix
+	poetry run ruff format src tests notebooks
+	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
+	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
 
 ## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
