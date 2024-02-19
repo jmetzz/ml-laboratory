@@ -3,12 +3,12 @@ import time
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
+from utils.data_helper import as_vector
+from utils.model_helper import save_pickle_model
 
 from neural_networks.base import networks
 from neural_networks.base.costs import CrossEntropyCost
 from neural_networks.base.initializers import sqrt_connections_ratio
-from utils.data_helper import as_vector
-from utils.model_helper import save_pickle_model
 
 
 def prepare_training_data(df, num_features, class_feature, num_classes):

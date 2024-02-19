@@ -1,9 +1,8 @@
 import numpy as np
+from common import sampling
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-
-from common import sampling
 from utils import datasets
 
 
@@ -95,7 +94,6 @@ class AdaBoostM1Classifier:
 
 
 if __name__ == "__main__":
-
     # Debug Test with toy 1-dimension dataset
 
     train_features = datasets.TOY_1D[:, :-1]

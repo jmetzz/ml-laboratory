@@ -1,11 +1,10 @@
 import operator
 
 import numpy as np
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-
 from common import distance
 from common.evaluation import accuracy
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
 
 
 class Knn:

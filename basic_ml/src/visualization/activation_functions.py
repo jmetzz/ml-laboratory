@@ -2,7 +2,6 @@ import pprint as pp
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 from neural_networks.base.activations import sigmoid, softmax, step, tanh
 
 

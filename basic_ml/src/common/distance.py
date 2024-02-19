@@ -18,4 +18,4 @@ def euclidean(instance1, instance2):
 
 def weighted_euclidean(instance1, instance2, weights):
     delta = instance1 - instance2
-    return np.sqrt((np.sum(weights * (delta * delta))))
+    return np.sqrt(np.sum(weights * (delta * delta)))

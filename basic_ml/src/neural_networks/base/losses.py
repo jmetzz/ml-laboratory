@@ -29,4 +29,3 @@ def l2_norm(estimations, true_values):
     :return: the value of the L2 loss function
     """
     return np.sum((true_values - estimations) ** 2)
-

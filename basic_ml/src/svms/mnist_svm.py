@@ -6,7 +6,6 @@
 """
 
 from sklearn import svm
-
 from utils.datasets import MNISTLoader
 
 if __name__ == "__main__":

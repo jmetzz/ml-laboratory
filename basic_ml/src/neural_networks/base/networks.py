@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Any, Iterator, Sequence
 
 import numpy as np
+from utils import data_helper
 
 from neural_networks.base.activations import relu, sigmoid
 from neural_networks.base.costs import CrossEntropyCost, QuadraticCost
 from neural_networks.base.initializers import random_gaussian, sqrt_connections_ratio
-from utils import data_helper
 
 
 class NetworkBase:
@@ -341,7 +341,6 @@ class ImprovedNetwork(NetworkBase):
         self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, b_hat)]
 
     def _monitor(self, monitor, lmbda, train_data, validation_data):
-
         train_acc = train_cost = valid_acc = valid_cost = None
         if "train_acc" in monitor or "train_cost" in monitor:
             measures = []

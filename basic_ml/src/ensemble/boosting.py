@@ -8,7 +8,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import shuffle
 
 
-class BoostClassifier:
+class SimpleBoostClassifier:
     """The original boosting algorithm by Schapire (1990).
     This algorithm combines three weak learners to generate a strong learner.
     A weak learner has error probability less than 1/2, which makes it better
@@ -50,7 +50,7 @@ class BoostClassifier:
         self._classifiers_trained = 2
 
         # Train the 3rd classifier
-        prediction_h1 = self.classifiers[0].predict(features_3)
+        prediction_h1 = self.classifiers[1].predict(features_3)
         prediction_h2 = self.classifiers[1].predict(features_3)
         features_3, labels_3 = self.prepare_input_h3(features_3, labels_3, prediction_h1, prediction_h2)
         if features_3.size != 0:
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         full_features_set, full_labels_set, test_size=0.33, random_state=42
     )
 
-    boosting = BoostClassifier(
+    boosting = SimpleBoostClassifier(
         KNeighborsClassifier(n_neighbors=3),
         DecisionTreeClassifier(criterion="entropy", max_depth=2, random_state=33),
         DecisionTreeClassifier(criterion="gini", random_state=71),

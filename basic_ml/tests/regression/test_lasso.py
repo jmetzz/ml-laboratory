@@ -2,7 +2,6 @@ import math
 
 import numpy as np
 from numpy.testing import assert_almost_equal
-
 from regression.lasso import coordinate_descent_step
 
 

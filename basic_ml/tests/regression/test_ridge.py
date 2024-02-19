@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.testing import assert_almost_equal
-
 from regression.ridge import feature_derivative_ridge
 
 np.random.seed(0)

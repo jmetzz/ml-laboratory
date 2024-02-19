@@ -2,9 +2,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from utils.data_helper import normalize
 
 from regression.base import predict_output
-from utils.data_helper import normalize
 
 
 def coordinate_descent_step(feature_matrix, feature_idx, weights, output, l1_penalty):
