@@ -139,34 +139,29 @@ def confusion_matrix(true_labels, predicted_labels) -> np.ndarray:
     # True positives (TP): Predicted = 1, True = 1
     true_positive = np.sum((y_hat == 1) & (y_true == 1))
 
-    matrix = np.array(
-        [
-            [true_negative, false_positive],
-            [false_negative, true_positive]
-        ]
-    )
+    matrix = np.array([[true_negative, false_positive], [false_negative, true_positive]])
     return matrix
 
 
 def roc(true_labels: np.ndarray, prediction_scores: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-   Calculate the ROC curve data points.
+    Calculate the ROC curve data points.
 
-   The ROC curve plots the true positive rate (TPR) against the
-   false positive rate (FPR) at various threshold settings.
+    The ROC curve plots the true positive rate (TPR) against the
+    false positive rate (FPR) at various threshold settings.
 
-   Args:
-       true_labels (np.ndarray): The ground truth binary labels.
-       prediction_scores (np.ndarray): The prediction scores for the positive class,
-       not necessarily binary labels.
+    Args:
+        true_labels (np.ndarray): The ground truth binary labels.
+        prediction_scores (np.ndarray): The prediction scores for the positive class,
+        not necessarily binary labels.
 
-   Returns:
-       Tuple[np.ndarray, np.ndarray, np.ndarray]: A tuple containing arrays for
-       FPR, TPR, and thresholds.
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray]: A tuple containing arrays for
+        FPR, TPR, and thresholds.
 
-   Raises:
-       ValueError: If `true_labels` and `prediction_scores` have different lengths.
-   """
+    Raises:
+        ValueError: If `true_labels` and `prediction_scores` have different lengths.
+    """
     if len(true_labels) != len(prediction_scores):
         raise ValueError("Length of true_labels and prediction_scores must be the same.")
 
@@ -226,7 +221,9 @@ def mae(true_labels, predictions) -> float:
     """
     Calculate the Mean Absolute Error (MAE).
 
-    MAE measures the average magnitude of the errors in a set of predictions, without considering their direction. It's the average over the test sample of the absolute differences between prediction and actual observation where all individual differences have equal weight.
+    MAE measures the average magnitude of the errors in a set of predictions, without considering their direction.
+    It's the average over the test sample of the absolute differences between prediction and actual observation
+    where all individual differences have equal weight.
 
     Args:
         true_labels (np.ndarray): The ground truth values.
@@ -385,7 +382,7 @@ def mpe(true_labels, predictions) -> float:
     return np.mean((y_true - y_hat) / y_true)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     y_true = np.array([0, 1, 1, 0, 1])  # Example ground truth labels
     y_scores = np.array([0.1, 0.4, 0.35, 0.8, 0.7])  # Example prediction scores
     fpr, tpr, tr = roc(y_true, y_scores)

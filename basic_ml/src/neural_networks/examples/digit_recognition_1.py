@@ -34,8 +34,9 @@ For that the training phase uses the algorithm known as gradient descent.
 
 """
 
-from neural_networks.base import networks
 from utils.data_helper import MNISTLoader
+
+from neural_networks.base import networks
 
 if __name__ == "__main__":
     training_set, validation_set, test_set = MNISTLoader.load_data_wrapper("../data/processed/MNIST/mnist.pkl.gz")

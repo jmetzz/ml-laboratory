@@ -1,8 +1,9 @@
 import random
 
-from clustering import BaseClustering
 from common import distance
 from utils import datasets
+
+from clustering import BaseClustering
 
 
 class KMeans(BaseClustering):

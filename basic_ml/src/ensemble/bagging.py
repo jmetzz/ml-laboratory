@@ -1,9 +1,8 @@
 import numpy as np
+from common import sampling
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-
-from common import sampling
 
 
 class BaggingClassifier:
@@ -27,7 +26,6 @@ class BaggingClassifier:
 
 
 if __name__ == "__main__":
-
     full_features_set, full_labels_set = load_iris(return_X_y=True)
     x_train, x_test, y_train, y_test = train_test_split(
         full_features_set, full_labels_set, test_size=0.33, random_state=42

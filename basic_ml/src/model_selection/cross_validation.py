@@ -3,10 +3,10 @@ import numpy as np
 
 class KFold:
     def __init__(self, n_splits=5, *, shuffle=False, random_state=None):
-        raise NotImplemented(":(")
+        raise NotImplementedError(":(")
 
     def get_n_splits(self, data):
-        raise NotImplemented(":(")
+        raise NotImplementedError(":(")
 
     def split(self, data) -> tuple[np.ndarray, np.ndarray]:
         """
@@ -21,4 +21,4 @@ class KFold:
                 The testing set indices for that split.
 
         """
-        raise NotImplemented(":(")
+        raise NotImplementedError(":(")

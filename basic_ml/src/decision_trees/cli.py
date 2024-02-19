@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
 import typer
+from common.evaluation import accuracy
 from sklearn.datasets import load_breast_cancer, load_iris
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 
-from common.evaluation import accuracy
 from decision_trees.bagged_tree import BaggedTrees
 from decision_trees.cart import CART
 
@@ -52,7 +52,7 @@ def random_vs_bagged(test_size: float = 0.33, max_num_trees: int = 100, num_tree
 
     for num_trees in range(1, max_num_trees, num_trees_increment):
         rf_clf = RandomForestClassifier(n_estimators=num_trees)
-        bt_clf = BaggedTrees(n_trees=num_trees)
+        bt_clf = BaggedTrees(n_estimators=num_trees)
 
         rf_clf.fit(train_features, train_labels)
         bt_clf.fit(train_features, train_labels)

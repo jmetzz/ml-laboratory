@@ -101,7 +101,7 @@ class NB:
             c_prob = self.model["probabilities"][label]
             for feature in range(self.model["dimension"]):
                 relative_feature_values = nb_dict[label][feature]
-                if instance[feature] in relative_feature_values.keys():
+                if instance[feature] in relative_feature_values:
                     c_prob *= relative_feature_values[instance[feature]]
                 else:
                     c_prob *= 0
@@ -126,7 +126,7 @@ class NB:
         # The Counter class is similar to bags or multisets in other languages.
         counter_dict = dict(Counter(values))
         size = len(values)
-        for key in counter_dict.keys():
+        for key in counter_dict:
             counter_dict[key] = counter_dict[key] / float(size)
         return counter_dict
 

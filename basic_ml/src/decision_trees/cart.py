@@ -1,7 +1,6 @@
 import json
 
 import numpy as np
-
 from utils.encoders import NumpyArrayEncoder
 
 

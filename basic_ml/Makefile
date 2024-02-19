@@ -47,16 +47,15 @@ test:
 ## Run static code checkers and linters
 check:
 	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
-	poetry run isort --check --color src tests
-	poetry run black --check src tests
-	poetry run flake8 src tests
+	poetry run ruff check src tests
 	@printf "All $(GREEN)done$(COFF)\n"
+
 
 ## Runs black formatter
 lint:
 	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
-	poetry run isort src tests
-	poetry run black src tests
+	poetry run ruff src tests --fix
+	poetry run ruff format src tests
 	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
 	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
 

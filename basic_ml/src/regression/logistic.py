@@ -1,7 +1,6 @@
 from typing import Tuple
 
 import numpy as np
-
 from neural_networks.base.activations import softmax
 
 
@@ -35,13 +34,9 @@ def logistic_regression(features, target, weights, iterations, learning_rate=0.0
     return weights
 
 
-def logistic_regression_l2regularized(features,
-                                      target,
-                                      weights,
-                                      bias,
-                                      iterations,
-                                      learning_rate=0.01,
-                                      regularization_strength=0.1) -> Tuple[np.ndarray, np.ndarray]:
+def logistic_regression_l2regularized(
+    features, target, weights, bias, iterations, learning_rate=0.01, regularization_strength=0.1
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Train a logistic regression model using gradient descent with L2 regularization.
 
@@ -97,13 +92,9 @@ def logistic_regression_l2regularized(features,
     return _weights, _bias
 
 
-def multinomial_logistic_regression(features,
-                                    target,
-                                    weights,
-                                    bias,
-                                    iterations,
-                                    learning_rate=0.01,
-                                    regularization_strength=0.1) -> Tuple[np.ndarray, np.ndarray]:
+def multinomial_logistic_regression(
+    features, target, weights, bias, iterations, learning_rate=0.01, regularization_strength=0.1
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Train a softmax logistic regression model using gradient descent with L2 regularization.
 

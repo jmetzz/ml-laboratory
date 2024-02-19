@@ -2,7 +2,6 @@ import heapq
 import pprint as pp
 
 from scipy.spatial import distance
-
 from utils import datasets
 
 
@@ -107,10 +106,7 @@ class HClustering:  # pylint: disable=too-few-public-methods
     @staticmethod
     def _valid_heap_node(heap_node, old_clusters):
         pair_data = heap_node[1]
-        for cluster in old_clusters:
-            if cluster in pair_data:
-                return False
-        return True
+        return all(cluster not in pair_data for cluster in old_clusters)
 
     def _add_heap_entry(self, heap, new_cluster, current_clusters):
         for existing_cluster in current_clusters.values():

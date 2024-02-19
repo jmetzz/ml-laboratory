@@ -1,5 +1,6 @@
-from neural_networks.base.networks import DidacticCourseraNetwork
 from utils.datasets import linear_forward_test_case
+
+from neural_networks.base.networks import DidacticCourseraNetwork
 
 if __name__ == "__main__":
     A, W, b = linear_forward_test_case()
