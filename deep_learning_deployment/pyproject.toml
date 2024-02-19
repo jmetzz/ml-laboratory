@@ -9,7 +9,7 @@ python = "3.9.2"
 Pillow = "^9.0.1"
 asgiref = "3.4.1"
 cvlib = "0.2.5"
-fastapi = "^0.68.0"
+fastapi = "^0.109.1"
 ipykernel = "6.0.3"
 ipywidgets = {version = "^7.6.3", optional = true}
 jupyterlab = "3.1.7"
