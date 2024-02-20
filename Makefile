@@ -13,6 +13,44 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 
+##################
+# Local commands #
+##################
+
+initialize:
+ifneq ($(wildcard .git),)
+	@printf "$(CYAN)>>> Repository already initialized.$(COFF)\n"
+else
+	@printf "$(CYAN)>>> Initializing git repository.$(COFF)\n"
+	git init
+endif
+
+## Install dependencies, including dev & test dependencies
+deps: initialize
+	@printf "$(CYAN)>>> Creating environment for project...$(COFF)\n"
+	poetry install --no-root --sync
+	poetry run pre-commit install
+
+## Run unit tests
+test:
+	@printf "$(CYAN)Running test suite$(COFF)\n"
+	export PYTHONPATH="./src" && poetry run pytest --cov=src
+
+## Run static code checkers and linters
+check:
+	@printf "$(CYAN)Running static code analysis and license generation$(COFF)\n"
+	poetry run ruff check src tests
+	@printf "All $(GREEN)done$(COFF)\n"
+
+
+## Runs black formatter
+lint:
+	@printf "$(CYAN)Auto-formatting with black$(COFF)\n"
+	poetry run ruff check src tests --fix
+	poetry run ruff format src tests notebooks
+	@printf " >>> Generating $(CYAN)licenses.md$(COFF) file\n"
+	poetry run pip-licenses --with-authors -f markdown --output-file ./licenses.md
+
 ## Removed the build, dist directories, pycache, pyo or pyc and swap files
 clean:
 	@printf "$(CYAN)Cleaning EVERYTHING!$(COFF)\n"
@@ -24,7 +62,6 @@ clean:
 	@find . -name '*~' -exec rm -f {} +
 	@find . -type f -name '.DS_Store' -delete
 	@printf "$(GREEN)>>> Removed$(COFF) pycache, .pyc, .pyo, .DS_Store files and files with ~\n"
-
 
 
 ## Connect to the dev db with a port FWD (Broadcasts on local 12.0.0.1:5432)
@@ -47,7 +84,6 @@ ifeq (default,$(PROFILE))
 else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
 endif
-
 
 
 #################################################################################
