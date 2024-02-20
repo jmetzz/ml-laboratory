@@ -1,9 +1,0 @@
-Makefile
-licenses.md
-myDir
-notebooks
-output.txt
-poetry.lock
-pyproject.toml
-src
-tests
