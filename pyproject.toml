@@ -43,6 +43,7 @@ perfplot = "^0.10.2"
 memory-profiler = "^0.61.0"
 line-profiler = "^4.1.2"
 psutil = "^5.9.8"
+ipython-sql = "^0.5.0"
 
 
 [tool.ruff]
