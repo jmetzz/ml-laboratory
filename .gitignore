@@ -1,10 +1,12 @@
-# MacOS
-.DS_Store
+.*
+!.keep
+!.gitignore
+
 
 # IDEs
 .idea
 .vscode
-
+.code-workspace
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -69,8 +71,7 @@ dmypy.json
 service_account_credentials.json
 
 # Other
-.profile_data
-resources/data/
+resources/data/unversioned
 results/*.csv
 results/*.stats
 results/*.pkl
